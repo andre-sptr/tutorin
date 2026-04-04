@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Zap, ArrowRight, Heart } from 'lucide-react';
+import { GraduationCap, ArrowRight, Heart } from 'lucide-react';
 
 export default function Footer() {
     return (
@@ -13,7 +13,7 @@ export default function Footer() {
                     <div className="lg:col-span-5">
                         <Link href="/" className="font-extrabold text-3xl tracking-tight text-slate-900 dark:text-white mb-6 inline-flex items-center gap-2 group">
                             Tutorin<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Bang</span>
-                            <Zap className="w-6 h-6 text-blue-500 group-hover:scale-110 group-hover:rotate-12 transition-transform" />
+                            <GraduationCap className="w-6 h-6 text-blue-500 group-hover:scale-110 group-hover:rotate-12 transition-transform" />
                         </Link>
                         <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-base mb-8 max-w-md">
                             Pusat tutorial troubleshoot teknologi untuk masyarakat nusantara. Mengubah masalah device yang membingungkan menjadi solusi praktis yang siap Anda terapkan sendiri.

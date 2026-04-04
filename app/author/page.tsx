@@ -1,6 +1,5 @@
 import { Code, Users, PenTool, Cpu, Laptop, MessageCircle, Mail, Globe, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 export const metadata = {
   title: "Author Tim TutorinBang - Profil Lengkap",
@@ -43,13 +42,28 @@ export default function AuthorPage() {
 
               {/* Social Links */}
               <div className="flex items-center justify-center md:justify-start gap-4">
-                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all">
+                <a
+                  href="https://andresptr.site/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all"
+                >
                   <Globe className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all">
+                <a
+                  href="mailto:andresaputra07012019@gmail.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all"
+                >
                   <Mail className="w-5 h-5" />
                 </a>
-                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all">
+                <a
+                  href="https://www.instagram.com/andree.sptrr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all"
+                >
                   <MessageCircle className="w-5 h-5" />
                 </a>
               </div>
@@ -60,7 +74,7 @@ export default function AuthorPage() {
 
       {/* Expertise Section */}
       <section className="container mx-auto px-4 max-w-4xl mb-16 relative z-10">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8 text-center md:text-left">Keahlian & Fokus Kami</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8 text-center md:text-left">Apa yang Bisa Kami Bantu?</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           <div className="bg-white dark:bg-slate-900/80 p-6 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 shadow-lg shadow-slate-200/20 dark:shadow-none flex items-start gap-4 hover:-translate-y-1 transition-transform duration-300">
@@ -69,7 +83,7 @@ export default function AuthorPage() {
             </div>
             <div>
               <h3 className="font-bold text-slate-900 dark:text-white mb-2">Hardware Troubleshoot</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Dari rakit PC, masalah laptop panas, hingga perbaikan komponen dengan peralatan sederhana.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Dari mengatasi printer bermasalah, laptop cepat panas, hingga merawat komputer dengan langkah aman dan sederhana.</p>
             </div>
           </div>
 
@@ -113,14 +127,14 @@ export default function AuthorPage() {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10">
-            <h2 className="text-3xl font-extrabold mb-4">Ingin berkolaborasi?</h2>
+            <h2 className="text-3xl font-extrabold mb-4">Punya Pertanyaan Spesifik?</h2>
             <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-              Punya tawaran kerja sama, request artikel khusus, atau tertarik menjadi kontributor di TutorinBang? Kami sangat terbuka untuk berdiskusi dengan Anda.
+              Device Anda mengalami kendala aneh yang belum ada solusinya di sini? Atau punya tips jitu yang ingin dibagikan? Kami selalu siap mendengar!
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/kontak" className="px-8 py-3 bg-white text-blue-600 font-bold rounded-full hover:bg-slate-50 transition-colors shadow-lg">
+              <a href="#" className="px-8 py-3 bg-white text-blue-600 font-bold rounded-full hover:bg-slate-50 transition-colors shadow-lg">
                 Hubungi Kami
-              </Link>
+              </a>
               <Link href="/" className="px-8 py-3 bg-blue-700/50 text-white font-medium rounded-full hover:bg-blue-800/60 backdrop-blur-md transition-colors border border-blue-400/30">
                 Baca Artikel Kami
               </Link>
