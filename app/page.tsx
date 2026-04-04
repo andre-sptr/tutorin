@@ -26,7 +26,7 @@ export default async function Home() {
               Publikasi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Terbaru</span>
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-              Jelajahi panduan troubleshoot masalah yang disusun khusus agar mudah dipraktikkan langsung oleh Anda.
+              Jelajahi tutorial troubleshoot masalah yang disusun khusus agar mudah dipraktikkan langsung oleh Anda.
             </p>
           </div>
           <Link href="/tutorial" className="shrink-0 flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 group shadow-sm hover:shadow-md">
@@ -90,7 +90,7 @@ export default async function Home() {
                     </p>
 
                     <div className="mt-auto flex items-center text-blue-600 dark:text-blue-400 font-extrabold text-sm gap-2 group-hover:gap-3 transition-all">
-                      Baca Panduan <ArrowRight className="w-5 h-5" />
+                      Baca Tutorial <ArrowRight className="w-5 h-5" />
                     </div>
                   </div>
                 </Link>
@@ -166,7 +166,7 @@ export default async function Home() {
               Kendala Error <br className="hidden md:block" /> Menghambat Aktivitas?
             </h2>
             <p className="text-xl text-blue-50/90 max-w-2xl mx-auto mb-12 leading-relaxed">
-              Jangan panik dulu! Temukan berbagai panduan troubleshoot sederhana yang bisa Anda praktikkan sendiri. Hemat waktu, tenaga, dan selesaikan masalah dengan cepat.
+              Jangan panik dulu! Temukan berbagai tutorial troubleshoot sederhana yang bisa Anda praktikkan sendiri. Hemat waktu, tenaga, dan selesaikan masalah dengan cepat.
             </p>
             <Link href="/tutorial" className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-white hover:bg-slate-50 text-blue-700 font-extrabold text-lg transition-transform hover:-translate-y-1 shadow-xl shadow-black/10 group">
               Temukan Solusinya

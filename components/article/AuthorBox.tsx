@@ -7,7 +7,7 @@ export default function AuthorBox() {
           T
         </div>
       </div>
-      
+
       <div>
         <h4 className="text-lg font-bold text-slate-900 mb-1">Tim TutorinBang</h4>
         <p className="text-slate-600 text-sm leading-relaxed mb-3">

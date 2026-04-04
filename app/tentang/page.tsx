@@ -22,13 +22,13 @@ export default function TentangPage() {
             <span>Kisah Kami</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-8 leading-[1.15]">
-            Membangun Masa Depan <br className="hidden md:block" />
+            Membangun Kemandirian <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-              Talenta Digital Lokal
+              Menghadapi Kendala Teknologi
             </span>
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            Berawal dari keinginan untuk memiliki platform referensi bahasa Indonesia yang setara dengan publikasi teknologi internasional, kami merintis <strong className="text-slate-900 dark:text-slate-200">TutorinBang</strong>.
+            Berawal dari seringnya melihat kebingungan mahasiswa saat menghadapi masalah device sehari-hari, kami merintis <strong className="text-slate-900 dark:text-slate-200">TutorinBang</strong> sebagai pusat tutorial troubleshoot yang ramah dan mudah dipahami.
           </p>
         </div>
       </section>
@@ -41,9 +41,9 @@ export default function TentangPage() {
             <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-8 transform -rotate-3 group-hover:rotate-0 transition-transform duration-300 border border-blue-100 dark:border-blue-800/50 shadow-sm">
               <Code className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Teknologi Terkini</h3>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Solusi Menyeluruh</h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm lg:text-base">
-              Fokus pada adopsi web modern seperti Next.js, React, TypeScript, dan Headless CMS yang relevan dengan kebutuhan industri global saat ini.
+              Fokus pada penyediaan solusi praktis untuk berbagai masalah hardware dan software yang paling sering dialami oleh user dalam aktivitas sehari-hari.
             </p>
           </div>
 
@@ -51,9 +51,9 @@ export default function TentangPage() {
             <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-8 transform rotate-3 group-hover:rotate-0 transition-transform duration-300 border border-emerald-100 dark:border-emerald-800/50 shadow-sm">
               <Users className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Untuk Komunitas</h3>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Bahasa Lokal</h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm lg:text-base">
-              Ditulis oleh engineer lokal, untuk membantu talenta pemrograman nusantara tanpa hambatan semantik terjemahan dan gaya bahasa yang kaku.
+              Ditulis dengan gaya bahasa membumi dan santai, agar setiap langkah troubleshoot dapat diikuti oleh siapa saja tanpa hambatan istilah teknis asing yang rumit.
             </p>
           </div>
 
@@ -61,9 +61,9 @@ export default function TentangPage() {
             <div className="w-16 h-16 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center mb-8 transform -rotate-3 group-hover:rotate-0 transition-transform duration-300 border border-purple-100 dark:border-purple-800/50 shadow-sm">
               <Lightbulb className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Evolusi Skuler</h3>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Selalu Relevan</h3>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm lg:text-base">
-              Setiap bulannya kami meneruskan tren arsitektur baru, untuk menjamin pengetahuan Anda selalu diperbarui. Praktik terbaik adalah komitmen kami.
+              Setiap saat kami memantau tren kendala teknologi terbaru, untuk menjamin solusi yang kami berikan selalu relevan dengan pembaruan sistem masa kini.
             </p>
           </div>
 
@@ -85,13 +85,13 @@ export default function TentangPage() {
 
           <div className="prose prose-lg dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 relative">
             <p className="lead text-xl font-medium text-slate-800 dark:text-slate-200 mb-8">
-              Pengetahuan teknis tingkat lanjut tidak seharusnya menjadi rahasia yang tersembunyi di balik terminologi rumit.
+              Solusi perbaikan hardware dan software tidak seharusnya menjadi rahasia yang tersembunyi di balik buku manual yang membosankan.
             </p>
             <p>
-              <strong>Visi kami</strong> adalah menjadi tempat persinggahan utama bagi setiap kreator dan pengembang web di Indonesia. Entah Anda adalah junior pemula yang masih mencoba memahami state pada React, maupun <em>engineer senior</em> yang sedang merancang arsitektur micro-frontend skala besar.
+              <strong>Visi kami</strong> adalah menjadi tempat persinggahan utama bagi masyarakat Indonesia saat menghadapi kendala teknologi. Entah Anda adalah seorang mahasiswa yang panik karena tugas tidak bisa disimpan, maupun pekerja profesional yang kesulitan mengatur koneksi internet di rumah.
             </p>
             <p>
-              Melalui tulisan kami, kami membawa <strong>misi</strong> untuk menyajikan topik rekayasa perangkat lunak sekompleks apapun ke dalam modul-modul yang ringan, langsung bekerja <em>(hands-on)</em>, namun tetap dalam koridor standar pemrograman pro-level.
+              Melalui tulisan kami, kami membawa <strong>misi</strong> untuk menyajikan proses perbaikan sekompleks apapun ke dalam artikel yang ringan, langsung bisa dipraktikkan <em>(hands-on)</em>, dan pastinya bisa untuk dilakukan secara mandiri.
             </p>
 
             <hr className="my-12 border-slate-200 dark:border-slate-800/80" />
@@ -101,9 +101,9 @@ export default function TentangPage() {
                 <HeartHandshake className="w-8 h-8" />
               </div>
               <div className="text-center sm:text-left">
-                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mt-0 mb-2">Mari Berkolaborasi!</h3>
+                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mt-0 mb-2">Punya Pertanyaan atau Ide?</h3>
                 <p className="mb-0 text-slate-600 dark:text-slate-400 text-[15px] leading-relaxed">
-                  Punya insight ide tutorial menarik? Kesulitan konfigurasi API? Atau sekedar tawaran kolaborasi iklan? Jangan ragu mengirimkan ping digital ke kotak masuk kami.
+                  Punya pengalaman unik saat mengatasi error device? Ingin request tutorial tertentu? Atau tawaran kerja sama? Jangan ragu mengirimkan pesan ke kotak masuk kami!
                 </p>
               </div>
             </div>
