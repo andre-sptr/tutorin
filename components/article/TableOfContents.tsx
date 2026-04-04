@@ -54,8 +54,8 @@ export default function TableOfContents() {
   if (headings.length === 0) return null;
 
   return (
-    <div className="bg-slate-50 p-5 rounded-xl border border-slate-100 mb-8 sticky top-24">
-      <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2 mb-4">
+    <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-100 dark:border-slate-800 mb-8 sticky top-24 backdrop-blur-xl">
+      <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2 mb-4">
         <Link2 className="w-4 h-4 text-blue-500" />
         Daftar Isi
       </h3>
@@ -68,13 +68,11 @@ export default function TableOfContents() {
               e.preventDefault();
               document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className={`block text-sm transition-colors duration-200 ${
-              h.level === 3 ? "pl-4" : "pl-0"
-            } ${
-              activeId === h.id 
-                ? "text-blue-600 font-semibold" 
+            className={`block text-sm transition-colors duration-200 ${h.level === 3 ? "pl-4" : "pl-0"
+              } ${activeId === h.id
+                ? "text-blue-600 font-semibold"
                 : "text-slate-600 hover:text-slate-900"
-            } py-1`}
+              } py-1`}
           >
             {h.text}
           </a>
