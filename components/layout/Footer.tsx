@@ -50,7 +50,7 @@ export default function Footer() {
                             <h3 className="font-extrabold text-slate-900 dark:text-white mb-6 uppercase tracking-wider text-sm">Platform</h3>
                             <ul className="space-y-4">
                                 <li><Link href="/tentang" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold text-sm flex items-center gap-2 group">Tentang Kami <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-blue-500" /></Link></li>
-                                <li><Link href="/kontak" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold text-sm flex items-center gap-2 group">Hubungi Tim <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-blue-500" /></Link></li>
+                                <li><Link href="/author" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold text-sm flex items-center gap-2 group">Hubungi Tim <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-blue-500" /></Link></li>
                                 <li><span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-bold text-xs ring-1 ring-inset ring-emerald-600/20 cursor-default">Menulis untuk Kami</span></li>
                             </ul>
                         </div>
