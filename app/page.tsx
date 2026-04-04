@@ -26,7 +26,7 @@ export default async function Home() {
               Publikasi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Terbaru</span>
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-              Jelajahi panduan praktis terbaru yang disiapkan khusus untuk memandu eksplorasi kreatif Anda minggu ini.
+              Jelajahi panduan troubleshoot masalah yang disusun khusus agar mudah dipraktikkan langsung oleh Anda.
             </p>
           </div>
           <Link href="/tutorial" className="shrink-0 flex items-center gap-2 px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 group shadow-sm hover:shadow-md">
@@ -104,7 +104,7 @@ export default async function Home() {
       <section className="container mx-auto px-4 max-w-7xl pt-12 pb-12 md:pt-32 md:pb-28 text-center relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100/50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold text-sm mb-8 border border-blue-200/50 dark:border-blue-800/50 backdrop-blur-sm shadow-sm animate-pulse-slow">
           <Zap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-          <span>Evolusi Pembelajaran Digital</span>
+          <span>Pusat Solusi Masalah Anda</span>
         </div>
 
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-8 leading-[1.15] max-w-5xl mx-auto drop-shadow-sm">
@@ -115,13 +115,13 @@ export default async function Home() {
         </h1>
 
         <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed mb-10">
-          TutorinBang membantu Anda memahami konsep pemrograman, merakit stack modern, dan membangun proyek impian Anda selangkah demi selangkah.
+          TutorinBang membantu Anda mengatasi berbagai kendala hardware dan software sehari-hari. Temukan langkah-langkah perbaikan yang mudah dipahami oleh siapa saja.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link href="/tutorial" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg transition-all duration-300 shadow-xl shadow-blue-600/20 flex items-center justify-center gap-2 group hover:-translate-y-1">
             <Rocket className="w-5 h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
-            Mulai Belajar Sekarang
+            Cari Solusi Sekarang
           </Link>
           <Link href="/tentang" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-lg transition-all duration-300 shadow-sm flex items-center justify-center gap-2 group hover:-translate-y-1">
             <Terminal className="w-5 h-5" />
@@ -143,8 +143,8 @@ export default async function Home() {
               <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Terstruktur</div>
             </div>
             <div>
-              <div className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Modern</div>
-              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Tech Stack</div>
+              <div className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Sederhana</div>
+              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Mudah Dipahami</div>
             </div>
             <div className="border-t md:border-t-0 border-slate-200 dark:border-slate-800/80 pt-8 md:pt-0 col-span-2 md:col-span-1">
               <div className="text-3xl font-extrabold text-slate-900 dark:text-white mb-2">Lokal</div>
@@ -163,13 +163,13 @@ export default async function Home() {
           <div className="relative z-10 flex flex-col items-center">
             <Rocket className="w-16 h-16 text-white/90 mb-8" />
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
-              Siap Mengubah Ide <br className="hidden md:block" /> Menjadi Kode?
+              Kendala Error <br className="hidden md:block" /> Menghambat Aktivitas?
             </h2>
             <p className="text-xl text-blue-50/90 max-w-2xl mx-auto mb-12 leading-relaxed">
-              Jangan biarkan error menghalangi kreativitas Anda. Temukan ratusan penyelesaian bug dan arsitektur di repositori edukasi kami.
+              Jangan panik dulu! Temukan berbagai panduan troubleshoot sederhana yang bisa Anda praktikkan sendiri. Hemat waktu, tenaga, dan selesaikan masalah dengan cepat.
             </p>
             <Link href="/tutorial" className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-white hover:bg-slate-50 text-blue-700 font-extrabold text-lg transition-transform hover:-translate-y-1 shadow-xl shadow-black/10 group">
-              Eksplorasi Sekarang
+              Temukan Solusinya
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
