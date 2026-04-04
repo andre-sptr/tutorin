@@ -198,7 +198,7 @@ export default function Header() {
                         {/* GitHub */}
                         <div className="hidden sm:flex items-center border-l border-slate-200 dark:border-slate-700 pl-2 ml-1">
                             <a
-                                href="https://github.com/andre-sptr/"
+                                href="https://github.com"
                                 target="_blank"
                                 rel="noreferrer"
                                 aria-label="GitHub"

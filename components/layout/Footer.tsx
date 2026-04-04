@@ -16,7 +16,7 @@ export default function Footer() {
                             <Zap className="w-6 h-6 text-blue-500 group-hover:scale-110 group-hover:rotate-12 transition-transform" />
                         </Link>
                         <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-base mb-8 max-w-md">
-                            Platform edukasi dan referensi independen untuk talenta digital nusantara. Mengubah abstraksi teknis yang kompleks menjadi kode nyata yang siap dikirim ke produksi.
+                            Pusat tutorial troubleshoot teknologi untuk masyarakat nusantara. Mengubah masalah device yang membingungkan menjadi solusi praktis yang siap Anda terapkan sendiri.
                         </p>
                         <div className="flex gap-4">
                             <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub" className="w-11 h-11 flex items-center justify-center rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:bg-blue-50 dark:hover:bg-blue-900/40 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-800 transition-all shadow-sm hover:shadow-md hover:-translate-y-1">
