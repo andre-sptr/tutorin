@@ -119,11 +119,10 @@ export default function Header() {
                                 <Link
                                     key={href}
                                     href={href}
-                                    className={`text-sm font-medium transition-colors ${
-                                        isActive(href)
-                                            ? "text-blue-600"
-                                            : "text-slate-600 dark:text-slate-300 hover:text-blue-600"
-                                    }`}
+                                    className={`text-sm font-medium transition-colors ${isActive(href)
+                                        ? "text-blue-600"
+                                        : "text-slate-600 dark:text-slate-300 hover:text-blue-600"
+                                        }`}
                                 >
                                     {label}
                                 </Link>
@@ -167,11 +166,10 @@ export default function Header() {
                                             role="option"
                                             aria-selected={i === selectedIdx}
                                             onClick={() => handleSuggestionClick(s.slug)}
-                                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
-                                                i === selectedIdx
-                                                    ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                                                    : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
-                                            }`}
+                                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${i === selectedIdx
+                                                ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                                : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+                                                }`}
                                         >
                                             <Search className="w-3.5 h-3.5 inline mr-2 text-slate-400" />
                                             {s.title}
@@ -200,7 +198,7 @@ export default function Header() {
                         {/* GitHub */}
                         <div className="hidden sm:flex items-center border-l border-slate-200 dark:border-slate-700 pl-2 ml-1">
                             <a
-                                href="https://github.com"
+                                href="https://github.com/andre-sptr/"
                                 target="_blank"
                                 rel="noreferrer"
                                 aria-label="GitHub"
@@ -260,11 +258,10 @@ export default function Header() {
                             <Link
                                 key={href}
                                 href={href}
-                                className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                                    isActive(href)
-                                        ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600"
-                                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                                }`}
+                                className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive(href)
+                                    ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600"
+                                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    }`}
                             >
                                 {label}
                             </Link>

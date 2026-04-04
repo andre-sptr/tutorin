@@ -11,7 +11,7 @@ export default function AuthorBox() {
       <div>
         <h4 className="text-lg font-bold text-slate-900 mb-1">Tim TutorinBang</h4>
         <p className="text-slate-600 text-sm leading-relaxed mb-3">
-          Kami adalah tim developer yang berdedikasi untuk membagikan wawasan, trik, dan tutorial seputar pengembangan web modern, JavaScript, dan ekosistem terkait.
+          Kami adalah pegiat teknologi yang berdedikasi untuk membagikan tutorial troubleshoot, tips, dan trik untuk mengatasi berbagai kendala hardware dan software sehari-hari dengan bahasa yang santai dan mudah dipahami.
         </p>
         <a href="/tentang" className="text-blue-600 text-sm hover:underline font-medium">
           Kenali kami lebih dekat &rarr;
