@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Modern Content & Tutorial Platform
 
-## Getting Started
+Proyek ini adalah aplikasi web berbasis **Next.js (App Router)** yang dirancang untuk menyajikan artikel atau tutorial secara dinamis. Data dikelola secara terpisah menggunakan **Strapi CMS**, memungkinkan pengelolaan konten yang fleksibel dan efisien.
 
-First, run the development server:
+## 🚀 Teknologi Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* **Frontend:** Next.js 15 (App Router)
+* **Bahasa:** TypeScript
+* **Styling:** Tailwind CSS
+* **Animasi:** Framer Motion
+* **Ikon:** Lucide React
+* **Backend:** Strapi CMS
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Fitur Utama
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* **Dynamic Content Rendering:** Merender konten dari Strapi Blocks secara dinamis termasuk teks kaya, gambar, dan blok kode.
+* **Search System:** Fitur pencarian artikel secara real-time melalui API internal.
+* **Dark Mode:** Dukungan tema terang dan gelap yang terintegrasi dengan `next-themes`.
+* **SEO Optimized:** Dilengkapi dengan pembuatan `sitemap.xml` dan `robots.txt` secara otomatis, serta dukungan OpenGraph.
+* **Reading Experience:** Dilengkapi dengan bilah progres membaca (reading progress bar) dan daftar isi otomatis (table of contents).
+* **Responsive Design:** Tampilan yang optimal di berbagai ukuran perangkat menggunakan Tailwind CSS.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Persiapan Lingkungan
 
-## Learn More
+Buat file `.env` di direktori utama dan tambahkan variabel berikut:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+# URL ke Backend Strapi Anda
+NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# URL Utama Website Anda
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
