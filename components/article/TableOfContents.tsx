@@ -14,13 +14,11 @@ export default function TableOfContents() {
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
-    // Cari semua heading di konten artikel, asumsikan konten ada dalam id="article-content"
     const articleContainer = document.getElementById("article-content");
     if (!articleContainer) return;
 
     const elements = Array.from(articleContainer.querySelectorAll("h2, h3"));
     const headingData = elements.map((el) => {
-      // Jika belum punya ID, buatkan otomatis
       if (!el.id) {
         el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') || `heading-${Math.random().toString(36).substr(2, 9)}`;
       }
@@ -33,11 +31,9 @@ export default function TableOfContents() {
 
     setHeadings(headingData);
 
-    // Setup intersection observer for scrollspy
     const callback = (entries: IntersectionObserverEntry[]) => {
       const visibleHeadings = entries.filter(entry => entry.isIntersecting);
       if (visibleHeadings.length > 0) {
-        // Ambil yang paling atas
         setActiveId(visibleHeadings[0].target.id);
       }
     };
