@@ -8,7 +8,7 @@ export default async function Home() {
   const dataTutorials = await getTutorials();
   const tutorials = dataTutorials.data || [];
   // Take top 6 tutorials for the homepage specifically
-  const recentTutorials = tutorials.slice(0, 6);
+  const recentTutorials = tutorials.slice(0, 5);
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
