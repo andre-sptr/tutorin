@@ -1,3 +1,5 @@
+import Image from "next/image";
+import tutorinLogo from "../tutorin.png";
 import { Code, Users, PenTool, Cpu, Laptop, MessageCircle, Mail, Globe, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
@@ -24,9 +26,12 @@ export default function AuthorPage() {
           <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8 mt-12 md:mt-16">
             {/* Avatar */}
             <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0">
-              <div className="w-full h-full bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-900 dark:to-indigo-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-extrabold text-5xl md:text-6xl">
-                T
-              </div>
+              <Image
+                src={tutorinLogo}
+                alt="Profil Tim TutorinBang"
+                className="w-full h-full object-cover"
+                placeholder="blur"
+              />
             </div>
 
             {/* Profile Info */}
