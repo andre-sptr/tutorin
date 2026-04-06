@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -25,6 +24,11 @@ export default function RootLayout({
         <html lang="id" className="scroll-smooth">
             <head>
                 <meta name="google-adsense-account" content="ca-pub-9170878168905515" />
+                <script
+                    async
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9170878168905515"
+                    crossOrigin="anonymous"
+                ></script>
                 {/* Anti-FOUC: apply dark class before paint */}
                 <script
                     dangerouslySetInnerHTML={{
@@ -44,14 +48,6 @@ export default function RootLayout({
                 <Footer />
                 <AIChat />
                 <ScrollToTop />
-
-                {/* AdSense — ganti ca-pub-XXXXXX dengan Publisher ID yang asli */}
-                <Script
-                    async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9170878168905515"
-                    crossOrigin="anonymous"
-                    strategy="afterInteractive"
-                />
             </body>
         </html>
     );

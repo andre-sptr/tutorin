@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 declare global {
     interface Window {
@@ -14,18 +14,23 @@ interface AdSenseProps {
 }
 
 export default function AdSenseSlot({ client = "ca-pub-9170878168905515", slot }: AdSenseProps) {
+    const isLoaded = useRef(false);
+
     useEffect(() => {
-        try {
-            (window.adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (error: any) {
-            if (!error?.message?.includes("already have ads")) {
-                console.error("AdSense error:", error);
+        if (!isLoaded.current) {
+            try {
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+                isLoaded.current = true;
+            } catch (error: any) {
+                if (!error?.message?.includes("already have ads")) {
+                    console.error("AdSense error:", error);
+                }
             }
         }
     }, []);
 
     return (
-        <div className="my-8 overflow-hidden bg-gray-50 border border-gray-100 p-2 text-center flex flex-col items-center justify-center min-h-[100px]">
+        <div className="w-full min-w-[250px] my-8 overflow-hidden bg-gray-50 border border-gray-100 p-2 text-center flex flex-col items-center justify-center min-h-[100px]">
             <span className="text-[10px] text-gray-400 uppercase tracking-widest mb-2 block">
                 Advertisement
             </span>
