@@ -8,25 +8,25 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen pb-24 pt-16 bg-slate-50 dark:bg-slate-950">
+    <main className="min-h-screen pb-12 md:pb-24 pt-8 md:pt-16 bg-slate-50 dark:bg-slate-950">
 
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-emerald-400/5 dark:bg-emerald-900/10 blur-[120px] rounded-full pointer-events-none -z-10" />
       <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-blue-400/5 dark:bg-blue-900/10 blur-[120px] rounded-full pointer-events-none -z-10" />
 
-      <article className="container mx-auto px-4 max-w-4xl relative z-10 pt-10">
+      <article className="container mx-auto px-4 max-w-4xl relative z-10 pt-4 md:pt-10">
 
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mb-6 shadow-sm border border-emerald-200/50 dark:border-emerald-800/50">
-            <FileText className="w-8 h-8" />
+        <div className="text-center mb-6 md:mb-12">
+          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mb-4 md:mb-6 shadow-sm border border-emerald-200/50 dark:border-emerald-800/50">
+            <FileText className="w-6 h-6 md:w-8 md:h-8" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">Syarat & Ketentuan</h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">Terakhir diperbarui: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2 md:mb-4">Syarat & Ketentuan</h1>
+          <p className="text-sm md:text-lg text-slate-600 dark:text-slate-400">Terakhir diperbarui: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900/90 rounded-[2rem] p-8 md:p-12 shadow-xl border border-slate-200/80 dark:border-slate-800/90 backdrop-blur-xl">
-          <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-600 dark:prose-p:text-slate-400 prose-a:text-emerald-600 dark:prose-a:text-emerald-400">
+        <div className="bg-white dark:bg-slate-900/90 rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-8 lg:p-12 shadow-xl border border-slate-200/80 dark:border-slate-800/90 backdrop-blur-xl">
+          <div className="prose prose-sm md:prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white prose-p:text-slate-600 dark:prose-p:text-slate-400 prose-a:text-emerald-600 dark:prose-a:text-emerald-400">
 
-            <p className="lead text-xl">
+            <p className="lead text-base md:text-xl">
               Ketentuan berikut ini menjadi landasan saat Anda mengakses setiap artikel, panduan, dan fitur yang ada di platform TutorinBang.
             </p>
 

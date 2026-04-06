@@ -77,7 +77,7 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
     const hasActiveFilter = currentQ || currentCategory;
 
     return (
-        <div className="mb-10 space-y-5">
+        <div className="mb-6 md:mb-10 space-y-3 md:space-y-5">
             {/* Search bar with debounce */}
             <form onSubmit={handleSearchSubmit} className="relative" role="search">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
@@ -88,7 +88,7 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
                     onChange={handleSearchChange}
                     placeholder="Cari tutorial..."
                     aria-label="Cari tutorial"
-                    className="w-full h-12 pl-11 pr-24 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full h-10 md:h-12 pl-11 pr-24 rounded-xl md:rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                     {localQ && (
@@ -112,14 +112,14 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
 
             {/* Category filter pills */}
             {categories.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider mr-1">
+                <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
+                    <span className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider mr-1">
                         <SlidersHorizontal className="w-3.5 h-3.5" />
                         Kategori:
                     </span>
                     <button
                         onClick={() => updateParams({ category: null })}
-                        className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${!currentCategory
+                        className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium border transition-all ${!currentCategory
                                 ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                                 : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600"
                             }`}
@@ -134,7 +134,7 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
                                     category: currentCategory === cat.slug ? null : cat.slug,
                                 })
                             }
-                            className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${currentCategory === cat.slug
+                            className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium border transition-all ${currentCategory === cat.slug
                                     ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                                     : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600"
                                 }`}

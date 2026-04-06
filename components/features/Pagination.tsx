@@ -50,17 +50,17 @@ export default function Pagination({ currentPage, totalPages }: Props) {
     return (
         <nav
             aria-label="Pagination"
-            className={`flex justify-center items-center gap-1.5 mt-14 ${isPending ? "opacity-60 pointer-events-none" : ""}`}
+            className={`flex justify-center items-center gap-1 md:gap-1.5 mt-8 md:mt-14 ${isPending ? "opacity-60 pointer-events-none" : ""}`}
         >
             {/* Prev */}
             <button
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
                 aria-label="Halaman sebelumnya"
-                className="flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className="flex items-center gap-1 px-2 md:px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
                 <ChevronLeft className="w-4 h-4" />
-                Prev
+                <span className="hidden sm:inline">Prev</span>
             </button>
 
             {/* Page numbers */}
@@ -75,7 +75,7 @@ export default function Pagination({ currentPage, totalPages }: Props) {
                         onClick={() => goToPage(p as number)}
                         aria-label={`Halaman ${p}`}
                         aria-current={p === currentPage ? "page" : undefined}
-                        className={`w-9 h-9 rounded-xl text-sm font-semibold border transition-all ${
+                        className={`w-8 h-8 md:w-9 md:h-9 rounded-xl text-sm font-semibold border transition-all ${
                             p === currentPage
                                 ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                                 : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600"
@@ -91,9 +91,9 @@ export default function Pagination({ currentPage, totalPages }: Props) {
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 aria-label="Halaman berikutnya"
-                className="flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className="flex items-center gap-1 px-2 md:px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
-                Next
+                <span className="hidden sm:inline">Next</span>
                 <ChevronRight className="w-4 h-4" />
             </button>
         </nav>

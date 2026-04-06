@@ -38,16 +38,16 @@ function TutorialCard({ tutorial }: { tutorial: StrapiTutorial }) {
                     <BookOpen className="w-12 h-12 opacity-50 block transform group-hover:scale-110 transition-transform duration-500" />
                 )}
             </div>
-            <div className="p-6 flex flex-col flex-1">
+            <div className="p-4 md:p-6 flex flex-col flex-1">
                 {tutorial.category && (
-                    <span className="inline-block px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider rounded-full mb-4 w-fit">
+                    <span className="inline-block px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider rounded-full mb-2 md:mb-4 w-fit">
                         {tutorial.category.name}
                     </span>
                 )}
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h2 className="text-base md:text-xl font-bold text-slate-900 dark:text-white mb-2 md:mb-3 line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {tutorial.title}
                 </h2>
-                <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 mb-6 flex-1">
+                <p className="text-slate-600 dark:text-slate-400 text-xs md:text-sm line-clamp-2 md:line-clamp-3 mb-3 md:mb-6 flex-1">
                     {tutorial.seo?.metaDescription ||
                         `Pelajari selengkapnya tentang ${tutorial.title} dalam panduan komprehensif ini.`}
                 </p>
@@ -75,27 +75,27 @@ export default async function TutorialIndexPage({ searchParams }: PageProps) {
     const { total, pageCount } = dataTutorials.meta.pagination;
 
     return (
-        <main className="min-h-screen py-16 bg-slate-50 dark:bg-slate-900">
+        <main className="min-h-screen py-8 md:py-16 bg-slate-50 dark:bg-slate-900">
             <div className="container mx-auto px-4 max-w-7xl">
 
                 {/* Premium Hero Header */}
-                <div className="relative bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 md:p-14 mb-14 border border-slate-200/60 dark:border-slate-800/80 shadow-2xl overflow-hidden group">
+                <div className="relative bg-white dark:bg-slate-900 rounded-[1.5rem] md:rounded-[2.5rem] p-5 md:p-8 lg:p-14 mb-6 md:mb-14 border border-slate-200/60 dark:border-slate-800/80 shadow-2xl overflow-hidden group">
                     {/* Abstract Background Glows */}
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-950/20 dark:to-indigo-950/20" />
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 group-hover:bg-blue-400/30 transition-colors duration-700 pointer-events-none" />
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-400/20 dark:bg-indigo-600/20 rounded-full blur-[60px] translate-y-1/3 -translate-x-1/3 group-hover:bg-indigo-400/30 transition-colors duration-700 pointer-events-none" />
                     
-                    <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
+                    <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-4 md:gap-10">
                         {/* Text Content */}
                         <div className="flex-1 text-center lg:text-left">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100/50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-semibold text-sm mb-6 border border-blue-200/50 dark:border-blue-800/50 backdrop-blur-sm shadow-sm">
-                                <GraduationCap className="w-4 h-4" />
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-semibold text-xs md:text-sm mb-3 md:mb-6 border border-blue-200/50 dark:border-blue-800/50 backdrop-blur-sm shadow-sm">
+                                <GraduationCap className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                 <span>Pusat Pembelajaran</span>
                             </div>
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 leading-[1.15]">
+                            <h1 className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2 md:mb-6 leading-[1.2] md:leading-[1.15]">
                                 Eksplorasi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Tutorial</span>
                             </h1>
-                            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                            <p className="text-sm md:text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                                 Temukan panduan praktis, tips komprehensif, dan wawasan mendalam untuk menguasai teknologi serta menyelesaikan masalah komputer Anda.
                             </p>
                         </div>
@@ -139,7 +139,7 @@ export default async function TutorialIndexPage({ searchParams }: PageProps) {
                     </div>
                 ) : (
                     <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
                             {tutorials.map((tutorial) => (
                                 <TutorialCard key={tutorial.documentId || tutorial.id} tutorial={tutorial} />
                             ))}

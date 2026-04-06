@@ -50,9 +50,9 @@ export default function TableOfContents() {
   if (headings.length === 0) return null;
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-100 dark:border-slate-800 mb-8 sticky top-24 backdrop-blur-xl">
-      <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2 mb-4">
-        <Link2 className="w-4 h-4 text-blue-500" />
+    <div className="bg-slate-50 dark:bg-slate-900/50 p-3 md:p-5 rounded-xl border border-slate-100 dark:border-slate-800 mb-6 md:mb-8 sticky top-24 backdrop-blur-xl">
+      <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2 mb-3 md:mb-4">
+        <Link2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-500" />
         Daftar Isi
       </h3>
       <nav className="space-y-1 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">

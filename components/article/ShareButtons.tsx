@@ -25,7 +25,7 @@ export default function ShareButtons({ title }: { title: string }) {
   const shareUrl = encodeURIComponent(url);
 
   return (
-    <div className="flex items-center gap-3 mt-6 mb-8 border-y border-slate-100 dark:border-slate-800 py-4">
+    <div className="flex items-center gap-3 mt-4 md:mt-6 mb-4 md:mb-8 border-y border-slate-100 dark:border-slate-800 py-3 md:py-4">
       <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Bagikan:</span>
 
       <a

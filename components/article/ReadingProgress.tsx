@@ -57,8 +57,8 @@ export default function ReadingProgress() {
 
             {/* Time remaining badge — only on article pages when scrolled */}
             {isArticlePage && timeRemaining && progress > 5 && (
-                <div className="fixed bottom-20 right-6 z-40 pointer-events-none">
-                    <div className="bg-slate-900/80 dark:bg-slate-700/90 text-white text-xs font-medium px-3 py-1.5 rounded-full backdrop-blur-sm shadow-lg">
+                <div className="fixed bottom-16 md:bottom-20 right-4 md:right-6 z-40 pointer-events-none">
+                    <div className="bg-slate-900/80 dark:bg-slate-700/90 text-white text-xs font-medium px-2.5 md:px-3 py-1 md:py-1.5 rounded-full backdrop-blur-sm shadow-lg">
                         {timeRemaining}
                     </div>
                 </div>

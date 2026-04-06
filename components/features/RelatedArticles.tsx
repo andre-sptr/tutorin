@@ -11,11 +11,11 @@ export default function RelatedArticles({ articles }: Props) {
     if (!articles || articles.length === 0) return null;
 
     return (
-        <section className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-700">
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">
+        <section className="mt-6 md:mt-12 pt-5 md:pt-8 border-t border-slate-100 dark:border-slate-700">
+            <h2 className="text-base md:text-xl font-extrabold text-slate-900 dark:text-white mb-3 md:mb-6 tracking-tight">
                 Artikel Terkait
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
                 {articles.map((article) => {
                     const imgUrl = getStrapiMediaUrl(
                         article.featuredImage?.formats?.small?.url ?? article.featuredImage?.url
@@ -39,8 +39,8 @@ export default function RelatedArticles({ articles }: Props) {
                                     <BookOpen className="w-8 h-8 text-slate-300" />
                                 )}
                             </div>
-                            <div className="p-4 flex flex-col flex-1">
-                                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2">
+                            <div className="p-3 md:p-4 flex flex-col flex-1">
+                                <h3 className="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200 line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1 md:mb-2">
                                     {article.title}
                                 </h3>
                                 <div className="mt-auto flex items-center gap-1 text-xs text-blue-600 font-semibold">

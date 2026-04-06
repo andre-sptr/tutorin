@@ -130,10 +130,10 @@ export default async function TutorialPage({ params }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <main className="container mx-auto px-4 max-w-7xl py-8 bg-white dark:bg-slate-900 min-h-screen">
+            <main className="container mx-auto px-4 max-w-7xl py-4 md:py-8 bg-white dark:bg-slate-900 min-h-screen">
 
                 {/* Breadcrumb */}
-                <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 mb-8">
+                <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-4 md:mb-8">
                     <Link href="/" className="hover:text-blue-600 transition-colors flex items-center gap-1">
                         <Home className="w-3.5 h-3.5" />
                         Beranda
@@ -170,7 +170,7 @@ export default async function TutorialPage({ params }: Props) {
                                     )}
                                 </div>
 
-                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-[1.15] mb-6 tracking-tight">
+                                <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-slate-900 dark:text-white leading-[1.2] md:leading-[1.15] mb-4 md:mb-6 tracking-tight">
                                     {tutorial.title}
                                 </h1>
 
@@ -207,7 +207,7 @@ export default async function TutorialPage({ params }: Props) {
                             <AdSenseSlot slot="0987654321" />
 
                             {/* Article Body */}
-                            <div id="article-content" className="prose prose-lg max-w-none w-full dark:prose-invert">
+                            <div id="article-content" className="prose prose-sm md:prose-lg max-w-none w-full dark:prose-invert">
                                 <StrapiBlocksRenderer content={tutorial.content} />
                             </div>
 

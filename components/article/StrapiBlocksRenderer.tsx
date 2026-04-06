@@ -78,7 +78,7 @@ function Block({ node }: { node: StrapiBlockNode }) {
 
         case "code":
             return (
-                <pre>
+                <pre className="overflow-x-auto">
                     <code>
                         {node.children.map((child, i) => (
                             <InlineText key={i} node={child} />
@@ -91,7 +91,7 @@ function Block({ node }: { node: StrapiBlockNode }) {
             const imgUrl = getStrapiMediaUrl(node.image?.url);
             const altText = node.image?.alternativeText || "";
             return (
-                <figure className="my-8">
+                <figure className="my-4 md:my-8">
                     <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: `${node.image?.width || 16} / ${node.image?.height || 9}` }}>
                         <Image
                             src={imgUrl}
