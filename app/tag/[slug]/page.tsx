@@ -15,7 +15,8 @@ type Props = {
 
 export async function generateStaticParams() {
     const dataTags = await getTags();
-    return dataTags.data.map((tag) => ({ slug: tag.slug }));
+    const tags = dataTags?.data ?? [];
+    return tags.map((tag) => ({ slug: tag.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -73,7 +74,8 @@ function TutorialCard({ tutorial }: { tutorial: StrapiTutorial }) {
 export default async function TagPage({ params, searchParams }: Props) {
     const { slug } = await params;
     const { page: pageStr } = await searchParams;
-    const page = Math.max(1, Number(pageStr ?? 1));
+    const parsedPage = parseInt(String(pageStr ?? "1"), 10);
+    const page = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
 
     const [tag, dataTutorials] = await Promise.all([
         getTagBySlug(slug),
@@ -82,8 +84,9 @@ export default async function TagPage({ params, searchParams }: Props) {
 
     if (!tag) notFound();
 
-    const tutorials = dataTutorials.data ?? [];
-    const { total, pageCount } = dataTutorials.meta.pagination;
+    const tutorials = dataTutorials?.data ?? [];
+    const total = dataTutorials?.meta?.pagination?.total ?? 0;
+    const pageCount = dataTutorials?.meta?.pagination?.pageCount ?? 1;
 
     return (
         <main className="min-h-screen py-8 md:py-16 bg-slate-50 dark:bg-slate-900">
