@@ -212,7 +212,7 @@ export default async function TutorialPage({ params }: Props) {
                             )}
 
                             {/* Ad: Above Article */}
-                            <AdSenseSlot slot="0987654321" />
+                            <AdSenseSlot slot="4200947578" />
 
                             {/* Article Body */}
                             <div id="article-content" className="prose prose-sm md:prose-lg max-w-none w-full dark:prose-invert">
@@ -236,7 +236,7 @@ export default async function TutorialPage({ params }: Props) {
                             )}
 
                             {/* Ad: Below Article */}
-                            <AdSenseSlot slot="1122334455" />
+                            <AdSenseSlot slot="3163198078" />
 
                             {/* Author Box */}
                             <AuthorBox />
@@ -252,7 +252,7 @@ export default async function TutorialPage({ params }: Props) {
                     <aside className="col-span-1 lg:col-span-4 lg:sticky lg:top-24 space-y-8 hidden md:block">
                         <TableOfContents />
                         <div>
-                            <AdSenseSlot slot="9988776655" />
+                            <AdSenseSlot slot="2887865904" />
                         </div>
                     </aside>
 

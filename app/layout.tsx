@@ -24,6 +24,7 @@ export default function RootLayout({
     return (
         <html lang="id" className="scroll-smooth">
             <head>
+                <meta name="google-adsense-account" content="ca-pub-9170878168905515" />
                 {/* Anti-FOUC: apply dark class before paint */}
                 <script
                     dangerouslySetInnerHTML={{
@@ -47,7 +48,7 @@ export default function RootLayout({
                 {/* AdSense — ganti ca-pub-XXXXXX dengan Publisher ID yang asli */}
                 <Script
                     async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456"
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9170878168905515"
                     crossOrigin="anonymous"
                     strategy="afterInteractive"
                 />

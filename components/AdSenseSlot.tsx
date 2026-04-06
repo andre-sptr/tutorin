@@ -13,7 +13,7 @@ interface AdSenseProps {
     slot: string;
 }
 
-export default function AdSenseSlot({ client = "ca-pub-1234567890123456", slot }: AdSenseProps) {
+export default function AdSenseSlot({ client = "ca-pub-9170878168905515", slot }: AdSenseProps) {
     useEffect(() => {
         try {
             // Push ads once per component mount
