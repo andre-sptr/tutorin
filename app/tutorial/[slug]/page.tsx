@@ -95,6 +95,14 @@ export default async function TutorialPage({ params }: Props) {
         : [];
 
     // JSON-LD Structured Data
+    const tagKeywords = tutorial.tags && tutorial.tags.length > 0
+        ? tutorial.tags.map((t) => t.name).join(", ")
+        : undefined;
+    const allKeywords = [
+        tutorial.category?.name,
+        tagKeywords,
+    ].filter(Boolean).join(", ") || undefined;
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "Article",
@@ -120,8 +128,8 @@ export default async function TutorialPage({ params }: Props) {
         },
         ...(tutorial.category && {
             "articleSection": tutorial.category.name,
-            "keywords": tutorial.category.name,
         }),
+        ...(allKeywords && { "keywords": allKeywords }),
     };
 
     return (
@@ -216,12 +224,13 @@ export default async function TutorialPage({ params }: Props) {
                                 <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700">
                                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider self-center">Tags:</span>
                                     {tutorial.tags.map((tag) => (
-                                        <span
+                                        <Link
                                             key={tag.documentId}
-                                            className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs rounded-full hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                            href={`/tag/${tag.slug}`}
+                                            className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                         >
                                             #{tag.name}
-                                        </span>
+                                        </Link>
                                     ))}
                                 </div>
                             )}

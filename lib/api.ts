@@ -234,3 +234,52 @@ export async function getSearchSuggestions(q: string): Promise<{ title: string; 
         return [];
     }
 }
+
+export async function getTags(): Promise<StrapiListResponse<StrapiTag>> {
+    try {
+        const res = await fetch(`${STRAPI_URL}/api/tags?sort=name:asc`, {
+            next: { revalidate: 300 },
+        });
+        if (!res.ok) throw new Error("Gagal mengambil data tags");
+        return await res.json();
+    } catch {
+        return { data: [], meta: { pagination: { page: 1, pageSize: 25, pageCount: 0, total: 0 } } };
+    }
+}
+
+export async function getTagBySlug(slug: string): Promise<StrapiTag | null> {
+    try {
+        const res = await fetch(
+            `${STRAPI_URL}/api/tags?filters[slug][$eq]=${slug}`,
+            { next: { revalidate: 300 } }
+        );
+        if (!res.ok) return null;
+        const data: StrapiListResponse<StrapiTag> = await res.json();
+        return data.data?.[0] ?? null;
+    } catch {
+        return null;
+    }
+}
+
+export async function getTutorialsByTag(
+    tagSlug: string,
+    page = 1,
+    pageSize = 12
+): Promise<StrapiListResponse<StrapiTutorial>> {
+    try {
+        const params = new URLSearchParams();
+        params.set("populate", "*");
+        params.set("filters[tags][slug][$eq]", tagSlug);
+        params.set("pagination[page]", String(page));
+        params.set("pagination[pageSize]", String(pageSize));
+        params.set("sort", "publishedAt:desc");
+
+        const res = await fetch(`${STRAPI_URL}/api/tutorials?${params.toString()}`, {
+            next: { revalidate: 60 },
+        });
+        if (!res.ok) throw new Error("Gagal mengambil data tutorial by tag");
+        return await res.json();
+    } catch {
+        return { data: [], meta: { pagination: { page: 1, pageSize: 12, pageCount: 0, total: 0 } } };
+    }
+}
