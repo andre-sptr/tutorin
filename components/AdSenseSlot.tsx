@@ -16,10 +16,8 @@ interface AdSenseProps {
 export default function AdSenseSlot({ client = "ca-pub-9170878168905515", slot }: AdSenseProps) {
     useEffect(() => {
         try {
-            // Push ads once per component mount
             (window.adsbygoogle = window.adsbygoogle || []).push({});
         } catch (error: any) {
-            // Ignore the strict mode error where ads are already pushed
             if (!error?.message?.includes("already have ads")) {
                 console.error("AdSense error:", error);
             }
