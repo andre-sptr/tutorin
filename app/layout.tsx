@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ReadingProgress from "@/components/article/ReadingProgress";
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import AIChat from "@/components/ui/AIChat";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -40,6 +41,7 @@ export default function RootLayout({
                 </div>
 
                 <Footer />
+                <AIChat />
                 <ScrollToTop />
 
                 {/* AdSense — ganti ca-pub-XXXXXX dengan Publisher ID yang asli */}
