@@ -166,8 +166,8 @@ export default function AIChat() {
             {isOpen && (
                 <div
                     className={`fixed right-4 md:right-6 z-50 flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300 ${isMinimized
-                            ? "bottom-6 w-64 h-14"
-                            : "bottom-6 w-[calc(100vw-2rem)] md:w-[400px] h-[560px] max-h-[80vh]"
+                        ? "bottom-6 w-64 h-14"
+                        : "bottom-6 w-[calc(100vw-2rem)] md:w-[400px] h-[560px] max-h-[80vh]"
                         }`}
                 >
                     {/* Header */}
@@ -219,16 +219,16 @@ export default function AIChat() {
                                     >
                                         {/* Avatar */}
                                         <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs font-bold ${msg.role === "assistant"
-                                                ? "bg-gradient-to-br from-blue-600 to-indigo-600"
-                                                : "bg-slate-500 dark:bg-slate-600"
+                                            ? "bg-gradient-to-br from-blue-600 to-indigo-600"
+                                            : "bg-slate-500 dark:bg-slate-600"
                                             }`}>
                                             {msg.role === "assistant" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                                         </div>
 
                                         {/* Bubble */}
                                         <div className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${msg.role === "assistant"
-                                                ? "bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-sm"
-                                                : "bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-tr-sm"
+                                            ? "bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-sm"
+                                            : "bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-tr-sm"
                                             }`}>
                                             {msg.role === "user" ? (
                                                 <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -309,7 +309,7 @@ export default function AIChat() {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    placeholder="Ketik pertanyaanmu... (Enter untuk kirim)"
+                                    placeholder="Ketik pertanyaanmu..."
                                     rows={1}
                                     disabled={isLoading}
                                     className="flex-1 resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-sm px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all max-h-28 overflow-y-auto"
