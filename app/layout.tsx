@@ -11,6 +11,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://tutorinbang.my.id"),
     title: "TutorinBang - Portal Tutorial Teknologi",
     description: "Belajar tips & trik teknologi, tutorial laptop, dan panduan komputer sehari-hari di TutorinBang.",
 };
