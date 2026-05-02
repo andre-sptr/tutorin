@@ -24,7 +24,6 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
     const currentQ = searchParams.get("q") ?? "";
     const currentCategory = searchParams.get("category") ?? "";
 
-    // Sync input if URL param changes externally (e.g. Header search)
     useEffect(() => {
         queueMicrotask(() => {
             setLocalQ(currentQ);
@@ -50,7 +49,6 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
         [searchParams, pathname, router]
     );
 
-    // Debounced search — fires 450ms after user stops typing
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setLocalQ(val);
@@ -73,7 +71,6 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
         updateParams({ q: null });
     };
 
-    // Cleanup debounce on unmount
     useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
 
     const hasActiveFilter = currentQ || currentCategory;
@@ -122,8 +119,8 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
                     <button
                         onClick={() => updateParams({ category: null })}
                         className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium border transition-all ${!currentCategory
-                                ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                                : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600"
+                            ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                            : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600"
                             }`}
                     >
                         Semua
@@ -137,8 +134,8 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
                                 })
                             }
                             className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium border transition-all ${currentCategory === cat.slug
-                                    ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600"
+                                ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                                : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600"
                                 }`}
                         >
                             {cat.name}

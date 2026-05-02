@@ -10,7 +10,6 @@ export default function ReadingProgress() {
     const totalWordsRef = useRef(0);
     const isArticlePage = pathname.startsWith("/tutorial/") && pathname !== "/tutorial/";
 
-    // Estimate total words on mount for article pages
     useEffect(() => {
         if (!isArticlePage) {
             totalWordsRef.current = 0;
@@ -32,7 +31,6 @@ export default function ReadingProgress() {
             const pct = Math.min(100, (currentScroll / scrollHeight) * 100);
             setProgress(pct);
 
-            // Update time remaining (only on article pages)
             if (isArticlePage && totalWordsRef.current > 0) {
                 const wordsRemaining = totalWordsRef.current * (1 - pct / 100);
                 const minutesLeft = Math.max(0, Math.ceil(wordsRemaining / 200));

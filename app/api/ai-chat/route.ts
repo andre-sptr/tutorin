@@ -1,9 +1,16 @@
+import { createOpenAI } from "@ai-sdk/openai";
+import { streamText } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "edge";
 
-const SUMOPOD_API_URL = "https://ai.sumopod.com/v1/chat/completions";
+const SUMOPOD_API_URL = "https://ai.sumopod.com/v1";
 const SUMOPOD_API_KEY = process.env.SUMOPOD_API_KEY ?? "";
+
+const sumopod = createOpenAI({
+    baseURL: SUMOPOD_API_URL,
+    apiKey: SUMOPOD_API_KEY,
+});
 
 const SYSTEM_PROMPT = `Kamu adalah "Bang Tutor" 🤖, asisten AI resmi dari TutorinBang - portal tutorial teknologi terpercaya untuk masyarakat Indonesia.
 
@@ -37,52 +44,37 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "API key tidak dikonfigurasi" }, { status: 500 });
     }
 
-    let body: { messages?: { role: string; content: string }[] };
     try {
-        body = await request.json();
-    } catch {
-        return NextResponse.json({ error: "Request tidak valid" }, { status: 400 });
-    }
+        const { messages } = await request.json();
 
-    const userMessages = body.messages ?? [];
+        const cleanMessages = messages
+            .filter((m: any) => m.role === 'user' || m.role === 'assistant')
+            .map((m: any) => ({
+                role: m.role,
+                content: typeof m.content === 'string' ? m.content : (Array.isArray(m.parts) ? m.parts.map((p: any) => p.text || "").join("") : "")
+            }))
+            .filter((m: any) => m.content.trim() !== "");
 
-    const messages = [
-        { role: "system", content: SYSTEM_PROMPT },
-        ...userMessages,
-    ];
+        const modelMessages = cleanMessages.length > 0 && cleanMessages[0].role === 'assistant'
+            ? cleanMessages.slice(1)
+            : cleanMessages;
 
-    try {
-        console.log("Sending to sumopod:", JSON.stringify(messages, null, 2));
+        let finalMessages = cleanMessages.length > 0 && cleanMessages[0].role === 'assistant'
+            ? cleanMessages.slice(1)
+            : cleanMessages;
 
-        const res = await fetch(SUMOPOD_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${SUMOPOD_API_KEY}`,
-            },
-            body: JSON.stringify({
-                model: "gpt-5.1",
-                messages,
-                max_tokens: 3000,
-                temperature: 0.7,
-            }),
-        });
-
-        if (!res.ok) {
-            const err = await res.text();
-            console.error("Sumopod API error:", err);
-            return NextResponse.json({ error: "Gagal menghubungi AI" }, { status: 502 });
+        if (finalMessages.length > 0 && finalMessages[0].role === 'user') {
+            finalMessages[0].content = `${SYSTEM_PROMPT}\n\nPERTANYAAN USER:\n${finalMessages[0].content}`;
         }
 
-        const data = await res.json();
-        console.log("Sumopod response data:", JSON.stringify(data, null, 2));
-        const reply = data.choices?.[0]?.message?.content ?? "Maaf, saya tidak bisa merespons saat ini.";
+        const result = streamText({
+            model: sumopod("gpt-5.1"),
+            messages: finalMessages as any,
+        });
 
-        return NextResponse.json({ reply });
+        return result.toTextStreamResponse();
     } catch (err) {
         console.error("AI chat error:", err);
         return NextResponse.json({ error: "Terjadi kesalahan internal" }, { status: 500 });
     }
 }
-
-// Just touching to force rebuild

@@ -33,6 +33,8 @@ function TutorialCard({ tutorial }: { tutorial: StrapiTutorial }) {
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        placeholder="blur"
+                        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
                     />
                 ) : (
                     <BookOpen className="w-12 h-12 opacity-50 block transform group-hover:scale-110 transition-transform duration-500" />

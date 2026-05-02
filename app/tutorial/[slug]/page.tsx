@@ -5,9 +5,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdSenseSlot from "@/components/AdSenseSlot";
 import ShareButtons from "@/components/article/ShareButtons";
+import BookmarkButton from "@/components/article/BookmarkButton";
+import ZenModeToggle from "@/components/article/ZenModeToggle";
 import TableOfContents from "@/components/article/TableOfContents";
 import AuthorBox from "@/components/article/AuthorBox";
 import StrapiBlocksRenderer from "@/components/article/StrapiBlocksRenderer";
+import JsonLd from "@/components/article/JsonLd";
 import RelatedArticles from "@/components/features/RelatedArticles";
 import { Clock, Calendar, Tag, Home, ChevronRight } from "lucide-react";
 
@@ -15,7 +18,6 @@ type Props = {
     params: Promise<{ slug: string }>;
 };
 
-// Pre-build all known slugs at build time (SSG)
 export async function generateStaticParams() {
     const dataTutorials = await getTutorials();
     return dataTutorials.data.map((t) => ({ slug: t.slug }));
@@ -88,13 +90,9 @@ export default async function TutorialPage({ params }: Props) {
     const featuredImageUrl = getStrapiMediaUrl(tutorial.featuredImage?.url);
     const featuredImageAlt = tutorial.featuredImage?.alternativeText || tutorial.title;
     const canonicalUrl = `${SITE_URL}/tutorial/${tutorial.slug}`;
-
-    // Fetch related articles (same category)
     const relatedArticles = tutorial.category
         ? await getRelatedArticles(tutorial.category.slug, tutorial.slug, 3)
         : [];
-
-    // JSON-LD Structured Data
     const tagKeywords = tutorial.tags && tutorial.tags.length > 0
         ? tutorial.tags.map((t) => t.name).join(", ")
         : undefined;
@@ -105,7 +103,7 @@ export default async function TutorialPage({ params }: Props) {
 
     const jsonLd = {
         "@context": "https://schema.org",
-        "@type": "Article",
+        "@type": "TechArticle",
         "headline": tutorial.title,
         "description": tutorial.seo?.metaDescription || "",
         "url": canonicalUrl,
@@ -134,10 +132,7 @@ export default async function TutorialPage({ params }: Props) {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
             <main className="container mx-auto px-4 max-w-7xl py-4 md:py-8 bg-white dark:bg-slate-900 min-h-screen">
 
                 {/* Breadcrumb */}
@@ -194,7 +189,13 @@ export default async function TutorialPage({ params }: Props) {
                                     </div>
                                 </div>
 
-                                <ShareButtons title={tutorial.title} />
+                                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                                    <ShareButtons title={tutorial.title} />
+                                    <div className="flex gap-2">
+                                        <ZenModeToggle />
+                                        <BookmarkButton tutorial={{ slug: tutorial.slug, title: tutorial.title, categoryName: tutorial.category?.name }} />
+                                    </div>
+                                </div>
                             </header>
 
                             {/* Featured Image */}

@@ -2,39 +2,86 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
-import { MessageCircle, X, Send, Loader2, Bot, User, Minimize2, RotateCcw } from "lucide-react";
+import { useChat } from "@ai-sdk/react";
+import type { UIMessage } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+import { MessageCircle, X, Send, Loader2, Bot, User, Minimize2, RotateCcw, Mic } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import type { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-type Message = {
-    id: string;
-    role: "user" | "assistant";
-    content: string;
-    timestamp: Date;
-};
-
-const WELCOME_MESSAGE: Message = {
+const WELCOME_MESSAGE: UIMessage = {
     id: "welcome",
     role: "assistant",
-    content: "## Halo Sobat! 👋\n\nSaya **Bang Tutor**, asisten AI dari **TutorinBang** — siap bantu kamu mengatasi kendala teknologi sehari-hari.\n\n**Yang bisa saya bantu:**\n- 💻 Masalah laptop & PC (Windows, driver, error)\n- 📊 Microsoft Office (Word, Excel, PowerPoint)\n- 🖨️ Troubleshoot printer (tidak bisa print, paper jam)\n- 🌐 Koneksi internet & jaringan\n- 🔧 Tips produktivitas komputer\n\nCeritakan masalahmu, dan saya akan bantu selangkah demi selangkah! 🚀",
-    timestamp: new Date(),
+    parts: [{
+        type: "text",
+        text: "## Halo Sobat! 👋\n\nSaya **Bang Tutor**, asisten AI dari **TutorinBang** — siap bantu kamu mengatasi kendala teknologi sehari-hari.\n\n**Yang bisa saya bantu:**\n- 💻 Masalah laptop & PC (Windows, driver, error)\n- 📊 Microsoft Office (Word, Excel, PowerPoint)\n- 🖨️ Troubleshoot printer (tidak bisa print, paper jam)\n- 🌐 Koneksi internet & jaringan\n- 🔧 Tips produktivitas komputer\n\nCeritakan masalahmu, dan saya akan bantu selangkah demi selangkah! 🚀"
+    }]
 };
 
 const AUTO_OPEN_KEY = "tutorinbang_chat_welcomed";
+
+const CHIP_SUGGESTIONS = [
+    "Kenapa printer saya not responding? 🖨️",
+    "Cara mengatasi laptop lemot di Windows 11 💻",
+    "Rumus VLOOKUP di Excel untuk pemula 📊",
+    "WiFi konek tapi internet tidak jalan 🌐",
+];
+
+const MARKDOWN_PLUGINS = [remarkGfm];
+
+const MARKDOWN_COMPONENTS: Components = {
+    p: ({ children }) => <p className="mb-1.5 last:mb-0">{children}</p>,
+    strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+    em: ({ children }) => <em className="italic">{children}</em>,
+    ul: ({ children }) => <ul className="list-disc list-inside space-y-0.5 my-1.5 pl-1">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal list-inside space-y-0.5 my-1.5 pl-1">{children}</ol>,
+    li: ({ children }) => <li className="text-sm">{children}</li>,
+    h1: ({ children }) => <p className="font-extrabold text-base mt-2 mb-1">{children}</p>,
+    h2: ({ children }) => <p className="font-extrabold text-sm mt-2 mb-1">{children}</p>,
+    h3: ({ children }) => <p className="font-bold text-sm mt-1.5 mb-0.5">{children}</p>,
+    code: ({ children }) => (
+        <code className="bg-black/10 dark:bg-white/10 rounded px-1 py-0.5 font-mono text-xs">{children}</code>
+    ),
+    pre: ({ children }) => (
+        <pre className="bg-black/10 dark:bg-white/10 rounded-lg px-3 py-2 font-mono text-xs my-1.5 overflow-x-auto whitespace-pre">{children}</pre>
+    ),
+    a: ({ href, children }) => (
+        <a href={href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-80">{children}</a>
+    ),
+    hr: () => <hr className="border-slate-200 dark:border-slate-600 my-2" />,
+    blockquote: ({ children }) => <blockquote className="border-l-2 border-blue-400 pl-2 my-1 opacity-80">{children}</blockquote>,
+};
 
 export default function AIChat() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
+
+    const { messages, sendMessage, status, setMessages } = useChat({
+        transport: new DefaultChatTransport({ api: "/api/ai-chat" }),
+        messages: [WELCOME_MESSAGE],
+    });
+
     const [input, setInput] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const isLoading = status === "streaming" || status === "submitted";
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value);
+    
+    const handleSubmit = (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (!input.trim() || isLoading) return;
+        sendMessage({ text: input });
+        setInput("");
+    };
+
+    const [isListening, setIsListening] = useState(false);
     const [hasNotification, setHasNotification] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const recognitionRef = useRef<any>(null);
     const isHomepage = pathname === "/";
 
-    // Auto-open on homepage first visit
     useEffect(() => {
         if (!isHomepage) return;
         const hasSeenWelcome = localStorage.getItem(AUTO_OPEN_KEY);
@@ -47,7 +94,6 @@ export default function AIChat() {
         }
     }, [isHomepage]);
 
-    // Show notification badge when closed and not on homepage after first load
     useEffect(() => {
         if (!isOpen && messages.length <= 1) {
             const timer = setTimeout(() => setHasNotification(true), 5000);
@@ -56,12 +102,12 @@ export default function AIChat() {
         setHasNotification(false);
     }, [isOpen, messages.length]);
 
-    // Scroll to bottom on new message
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+        if (isOpen && !isMinimized) {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages, isOpen, isMinimized]);
 
-    // Focus input when opened
     useEffect(() => {
         if (isOpen && !isMinimized) {
             setTimeout(() => inputRef.current?.focus(), 100);
@@ -84,61 +130,50 @@ export default function AIChat() {
         setMessages([WELCOME_MESSAGE]);
     };
 
-    const sendMessage = useCallback(async (textOverride?: string) => {
-        const trimmed = (textOverride ?? input).trim();
-        if (!trimmed || isLoading) return;
+    const startListening = useCallback(() => {
+        if (isListening) return;
 
-        const userMsg: Message = {
-            id: Date.now().toString(),
-            role: "user",
-            content: trimmed,
-            timestamp: new Date(),
-        };
+        if (!recognitionRef.current) {
+            const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Browser Anda tidak mendukung fitur input suara.");
+                return;
+            }
 
-        setMessages((prev) => [...prev, userMsg]);
-        if (!textOverride) setInput(""); // hanya clear input jika bukan dari chip
-        setIsLoading(true);
+            const recognition = new SpeechRecognition();
+            recognition.lang = "id-ID";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => setIsListening(true);
+            recognition.onresult = (event: any) => {
+                const transcript = event.results[0][0].transcript;
+                setInput(transcript);
+            };
+            recognition.onerror = () => setIsListening(false);
+            recognition.onend = () => setIsListening(false);
+
+            recognitionRef.current = recognition;
+        }
 
         try {
-            const history = [...messages, userMsg]
-                .filter((m) => m.id !== "welcome")
-                .map((m) => ({ role: m.role, content: m.content }));
-
-            const res = await fetch("/api/ai-chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messages: history }),
-            });
-
-            const data = await res.json();
-            const reply = data.reply ?? "Maaf, saya sedang tidak bisa merespons. Coba lagi ya!";
-
-            const assistantMsg: Message = {
-                id: (Date.now() + 1).toString(),
-                role: "assistant",
-                content: reply,
-                timestamp: new Date(),
-            };
-            setMessages((prev) => [...prev, assistantMsg]);
-        } catch {
-            setMessages((prev) => [
-                ...prev,
-                {
-                    id: (Date.now() + 1).toString(),
-                    role: "assistant",
-                    content: "Aduh, koneksi ke server AI bermasalah nih 😅 Coba lagi dalam beberapa saat ya!",
-                    timestamp: new Date(),
-                },
-            ]);
-        } finally {
-            setIsLoading(false);
+            recognitionRef.current.start();
+        } catch (e) {
         }
-    }, [input, isLoading, messages]);
+    }, [isListening, setInput]);
+
+    const handleChipClick = (chip: string) => {
+        setInput(chip);
+        setTimeout(() => {
+            const event = { preventDefault: () => { } } as any;
+            handleSubmit(event);
+        }, 50);
+    };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            sendMessage();
+            handleSubmit(e as any);
         }
     };
 
@@ -149,7 +184,7 @@ export default function AIChat() {
                 <button
                     onClick={handleOpen}
                     aria-label="Buka AI Chat dengan Bang Tutor"
-                    className="fixed bottom-6 right-20 z-40 w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center transition-all duration-300 group"
+                    className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center transition-all duration-300 group"
                 >
                     <MessageCircle className="w-5 h-5" />
                     {hasNotification && (
@@ -212,58 +247,62 @@ export default function AIChat() {
                         <>
                             {/* Messages */}
                             <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
-                                {messages.map((msg) => (
-                                    <div
-                                        key={msg.id}
-                                        className={`flex gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
-                                    >
-                                        {/* Avatar */}
-                                        <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs font-bold ${msg.role === "assistant"
-                                            ? "bg-gradient-to-br from-blue-600 to-indigo-600"
-                                            : "bg-slate-500 dark:bg-slate-600"
-                                            }`}>
-                                            {msg.role === "assistant" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
-                                        </div>
+                                {messages.map((msg: UIMessage) => {
+                                    const textContent = msg.parts 
+                                        ? msg.parts
+                                            .filter((part) => part.type === 'text')
+                                            .map((part) => 'text' in part ? part.text : "")
+                                            .join("")
+                                        : "";
+                                    
+                                    const reasoningContent = msg.parts
+                                        ? msg.parts
+                                            .filter((part) => part.type === 'reasoning')
+                                            .map((part) => 'text' in part ? part.text : "")
+                                            .join("")
+                                        : "";
 
-                                        {/* Bubble */}
-                                        <div className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${msg.role === "assistant"
-                                            ? "bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-sm"
-                                            : "bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-tr-sm"
-                                            }`}>
-                                            {msg.role === "user" ? (
-                                                <p className="whitespace-pre-wrap">{msg.content}</p>
-                                            ) : (
-                                                <ReactMarkdown
-                                                    remarkPlugins={[remarkGfm]}
-                                                    components={{
-                                                        p: ({ children }) => <p className="mb-1.5 last:mb-0">{children}</p>,
-                                                        strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-                                                        em: ({ children }) => <em className="italic">{children}</em>,
-                                                        ul: ({ children }) => <ul className="list-disc list-inside space-y-0.5 my-1.5 pl-1">{children}</ul>,
-                                                        ol: ({ children }) => <ol className="list-decimal list-inside space-y-0.5 my-1.5 pl-1">{children}</ol>,
-                                                        li: ({ children }) => <li className="text-sm">{children}</li>,
-                                                        h1: ({ children }) => <p className="font-extrabold text-base mt-2 mb-1">{children}</p>,
-                                                        h2: ({ children }) => <p className="font-extrabold text-sm mt-2 mb-1">{children}</p>,
-                                                        h3: ({ children }) => <p className="font-bold text-sm mt-1.5 mb-0.5">{children}</p>,
-                                                        code: ({ children }) => (
-                                                            <code className="bg-black/10 dark:bg-white/10 rounded px-1 py-0.5 font-mono text-xs">{children}</code>
-                                                        ),
-                                                        pre: ({ children }) => (
-                                                            <pre className="bg-black/10 dark:bg-white/10 rounded-lg px-3 py-2 font-mono text-xs my-1.5 overflow-x-auto whitespace-pre">{children}</pre>
-                                                        ),
-                                                        a: ({ href, children }) => (
-                                                            <a href={href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-80">{children}</a>
-                                                        ),
-                                                        hr: () => <hr className="border-slate-200 dark:border-slate-600 my-2" />,
-                                                        blockquote: ({ children }) => <blockquote className="border-l-2 border-blue-400 pl-2 my-1 opacity-80">{children}</blockquote>,
-                                                    }}
-                                                >
-                                                    {msg.content}
-                                                </ReactMarkdown>
-                                            )}
+                                    return (
+                                        <div
+                                            key={msg.id}
+                                            className={`flex flex-col gap-1 ${msg.role === "user" ? "items-end" : "items-start"}`}
+                                        >
+                                            <div
+                                                className={`flex gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
+                                            >
+                                                {/* Avatar */}
+                                                <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs font-bold ${msg.role === "assistant"
+                                                    ? "bg-gradient-to-br from-blue-600 to-indigo-600"
+                                                    : "bg-slate-500 dark:bg-slate-600"
+                                                    }`}>
+                                                {msg.role === "assistant" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                                            </div>
+
+                                            {/* Bubble */}
+                                            <div className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${msg.role === "assistant"
+                                                ? "bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-sm"
+                                                : "bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-tr-sm"
+                                                }`}>
+                                                {reasoningContent && (
+                                                    <div className="mb-2 p-2 bg-blue-50/50 dark:bg-blue-900/20 border-l-2 border-blue-400 rounded text-xs text-slate-500 dark:text-slate-400 italic">
+                                                        <p className="font-semibold not-italic mb-1 text-[10px] uppercase tracking-wider opacity-70">Berpikir...</p>
+                                                        {reasoningContent}
+                                                    </div>
+                                                )}
+                                                {msg.role === "user" ? (
+                                                    <p className="whitespace-pre-wrap">{textContent}</p>
+                                                ) : (
+                                                    <ReactMarkdown
+                                                        remarkPlugins={MARKDOWN_PLUGINS}
+                                                        components={MARKDOWN_COMPONENTS}
+                                                    >
+                                                        {textContent || (isLoading && msg.id === messages[messages.length-1].id ? "..." : "")}
+                                                    </ReactMarkdown>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
 
                                 {/* Loading indicator */}
                                 {isLoading && (
@@ -285,15 +324,10 @@ export default function AIChat() {
                             {/* Quick suggestion chips */}
                             {messages.length <= 1 && (
                                 <div className="px-4 pb-2 flex flex-wrap gap-1.5">
-                                    {[
-                                        "Kenapa printer saya not responding? 🖨️",
-                                        "Cara mengatasi laptop lemot di Windows 11 💻",
-                                        "Rumus VLOOKUP di Excel untuk pemula 📊",
-                                        "WiFi konek tapi internet tidak jalan 🌐",
-                                    ].map((chip) => (
+                                    {CHIP_SUGGESTIONS.map((chip) => (
                                         <button
                                             key={chip}
-                                            onClick={() => sendMessage(chip)}
+                                            onClick={() => handleChipClick(chip)}
                                             className="px-3 py-1 text-xs bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-slate-700 rounded-full hover:bg-blue-100 dark:hover:bg-slate-700 transition-colors font-medium"
                                         >
                                             {chip}
@@ -303,11 +337,20 @@ export default function AIChat() {
                             )}
 
                             {/* Input area */}
-                            <div className="px-3 py-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 items-end bg-white dark:bg-slate-900 flex-shrink-0">
+                            <form onSubmit={handleSubmit} className="px-3 py-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 items-end bg-white dark:bg-slate-900 flex-shrink-0 w-full">
+                                <button
+                                    type="button"
+                                    onClick={startListening}
+                                    disabled={isLoading}
+                                    aria-label="Input Suara"
+                                    className={`p-2 rounded-xl border flex items-center justify-center transition-all h-10 w-10 flex-shrink-0 ${isListening ? 'border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                >
+                                    <Mic className={`w-4 h-4 ${isListening ? 'animate-pulse' : ''}`} />
+                                </button>
                                 <textarea
                                     ref={inputRef}
                                     value={input}
-                                    onChange={(e) => setInput(e.target.value)}
+                                    onChange={handleInputChange}
                                     onKeyDown={handleKeyDown}
                                     placeholder="Ketik pertanyaanmu..."
                                     rows={1}
@@ -316,7 +359,7 @@ export default function AIChat() {
                                     style={{ scrollbarWidth: "none" }}
                                 />
                                 <button
-                                    onClick={() => sendMessage()}
+                                    type="submit"
                                     disabled={!input.trim() || isLoading}
                                     aria-label="Kirim pesan"
                                     className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center flex-shrink-0 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md"
@@ -327,7 +370,7 @@ export default function AIChat() {
                                         <Send className="w-4 h-4" />
                                     )}
                                 </button>
-                            </div>
+                            </form>
                         </>
                     )}
                 </div>

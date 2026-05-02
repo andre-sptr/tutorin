@@ -22,7 +22,6 @@ export default function Header() {
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Close on route change
     useEffect(() => {
         queueMicrotask(() => {
             setMobileMenuOpen(false);
@@ -31,7 +30,6 @@ export default function Header() {
         });
     }, [pathname]);
 
-    // Fetch suggestions with debounce
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         if (query.trim().length < 2) {
@@ -51,7 +49,6 @@ export default function Header() {
         return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
     }, [query]);
 
-    // Close suggestions on outside click
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (!suggestionsRef.current?.contains(e.target as Node) && !inputRef.current?.contains(e.target as Node)) {
@@ -180,6 +177,8 @@ export default function Header() {
 
                         {/* Mobile search toggle */}
                         <button
+                            aria-expanded={mobileSearchOpen}
+                            aria-controls="mobile-search-panel"
                             aria-label={mobileSearchOpen ? "Tutup pencarian" : "Cari tutorial"}
                             onClick={() => {
                                 setMobileSearchOpen((p) => !p);
@@ -211,6 +210,8 @@ export default function Header() {
 
                         {/* Mobile hamburger */}
                         <button
+                            aria-expanded={mobileMenuOpen}
+                            aria-controls="mobile-nav-panel"
                             aria-label={mobileMenuOpen ? "Tutup menu" : "Buka menu"}
                             onClick={() => { setMobileMenuOpen((p) => !p); setMobileSearchOpen(false); }}
                             className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
@@ -222,7 +223,7 @@ export default function Header() {
 
                 {/* Mobile search bar */}
                 {mobileSearchOpen && (
-                    <div className="lg:hidden border-t border-slate-100 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-900">
+                    <div id="mobile-search-panel" className="lg:hidden border-t border-slate-100 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-900">
                         <form onSubmit={handleSearch} role="search" className="flex gap-2">
                             <div className="relative flex-1">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
@@ -248,7 +249,7 @@ export default function Header() {
 
                 {/* Mobile nav */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-4 space-y-1">
+                    <div id="mobile-nav-panel" className="md:hidden border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-4 space-y-1">
                         {[
                             { href: "/", label: "Beranda" },
                             { href: "/tutorial", label: "Tutorial" },

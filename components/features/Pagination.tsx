@@ -32,7 +32,6 @@ export default function Pagination({ currentPage, totalPages }: Props) {
 
     if (totalPages <= 1) return null;
 
-    // Build page number list with ellipsis
     const getPages = (): (number | "...")[] => {
         if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
         const pages: (number | "...")[] = [1];
@@ -75,11 +74,10 @@ export default function Pagination({ currentPage, totalPages }: Props) {
                         onClick={() => goToPage(p as number)}
                         aria-label={`Halaman ${p}`}
                         aria-current={p === currentPage ? "page" : undefined}
-                        className={`w-8 h-8 md:w-9 md:h-9 rounded-xl text-sm font-semibold border transition-all ${
-                            p === currentPage
+                        className={`w-8 h-8 md:w-9 md:h-9 rounded-xl text-sm font-semibold border transition-all ${p === currentPage
                                 ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                                 : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:text-blue-600"
-                        }`}
+                            }`}
                     >
                         {p}
                     </button>

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { getStrapiMediaUrl, type StrapiBlockNode, type StrapiTextNode, type StrapiLinkNode } from "@/lib/api";
 
-// Renders inline text with formatting modifiers
 function InlineText({ node }: { node: StrapiTextNode | StrapiLinkNode }) {
     if (node.type === "link") {
         return (
@@ -25,7 +24,6 @@ function InlineText({ node }: { node: StrapiTextNode | StrapiLinkNode }) {
     return <>{content}</>;
 }
 
-// Renders a single block node
 function Block({ node }: { node: StrapiBlockNode }) {
     switch (node.type) {
         case "paragraph": {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Link2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 type Heading = {
   id: string;
@@ -55,23 +56,32 @@ export default function TableOfContents() {
         <Link2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-500" />
         Daftar Isi
       </h3>
-      <nav className="space-y-1 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+      <nav className="space-y-1.5 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar relative ml-2">
         {headings.map((h) => (
-          <a
-            key={h.id}
-            href={`#${h.id}`}
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className={`block text-sm transition-colors duration-200 ${h.level === 3 ? "pl-4" : "pl-0"
-              } ${activeId === h.id
-                ? "text-blue-600 font-semibold"
-                : "text-slate-600 hover:text-slate-900"
-              } py-1`}
-          >
-            {h.text}
-          </a>
+          <div key={h.id} className="relative">
+            {activeId === h.id && (
+              <motion.div
+                layoutId="activeToCIndicator"
+                className="absolute -left-3 top-0 bottom-0 w-1 bg-blue-600 rounded-full"
+                initial={false}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              />
+            )}
+            <a
+              href={`#${h.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className={`block text-sm transition-colors duration-200 ${h.level === 3 ? "pl-4" : "pl-0"
+                } ${activeId === h.id
+                  ? "text-blue-600 font-semibold"
+                  : "text-slate-600 hover:text-slate-900"
+                } py-1`}
+            >
+              {h.text}
+            </a>
+          </div>
         ))}
       </nav>
     </div>

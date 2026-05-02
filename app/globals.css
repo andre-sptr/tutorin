@@ -207,3 +207,18 @@ header {
     margin-bottom: 1em;
   }
 }
+
+/* ============================================================
+   Zen Mode (Focus Mode)
+   ============================================================ */
+html.zen-mode body > header,
+html.zen-mode body > footer,
+html.zen-mode aside {
+  display: none !important;
+}
+
+html.zen-mode .lg\:col-span-8 {
+  grid-column: span 12 / span 12 !important;
+  max-width: 900px;
+  margin: 0 auto;
+}
