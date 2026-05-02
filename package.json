@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:admin": "node test/admin-content-policy.test.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.58",

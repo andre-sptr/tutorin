@@ -93,8 +93,9 @@ export default async function TutorialPage({ params }: Props) {
     const relatedArticles = tutorial.category
         ? await getRelatedArticles(tutorial.category.slug, tutorial.slug, 3)
         : [];
-    const tagKeywords = tutorial.tags && tutorial.tags.length > 0
-        ? tutorial.tags.map((t) => t.name).join(", ")
+    const publicTags = (tutorial.tags ?? []).filter((tag) => !tag.slug.startsWith("system-"));
+    const tagKeywords = publicTags.length > 0
+        ? publicTags.map((t) => t.name).join(", ")
         : undefined;
     const allKeywords = [
         tutorial.category?.name,
@@ -221,10 +222,10 @@ export default async function TutorialPage({ params }: Props) {
                             </div>
 
                             {/* Tags */}
-                            {tutorial.tags && tutorial.tags.length > 0 && (
+                            {publicTags.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700">
                                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider self-center">Tags:</span>
-                                    {tutorial.tags.map((tag) => (
+                                    {publicTags.map((tag) => (
                                         <Link
                                             key={tag.documentId}
                                             href={`/tag/${tag.slug}`}

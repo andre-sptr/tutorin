@@ -603,12 +603,19 @@ Isi:
 NEXT_PUBLIC_STRAPI_URL=https://api.tutorinbang.my.id
 NEXT_PUBLIC_SITE_URL=https://tutorinbang.my.id
 SUMOPOD_API_KEY=GANTI_API_KEY_ANDA
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=uciha361
+ADMIN_SESSION_SECRET=GANTI_SECRET_PANJANG_RANDOM
+STRAPI_WRITE_TOKEN=GANTI_API_TOKEN_STRAPI
+CRON_SECRET=GANTI_SECRET_CRON
 ```
 
 Catatan:
 
 - Jangan commit `.env`.
-- Jika tidak memakai fitur AI chat, isi `SUMOPOD_API_KEY` hanya jika route `/api/ai-chat` memang digunakan.
+- `SUMOPOD_API_KEY` dipakai oleh route `/api/ai-chat` dan generator konten AI di admin panel.
+- `ADMIN_SESSION_SECRET` dan `CRON_SECRET` gunakan nilai random panjang. Contoh generate: `openssl rand -base64 32`.
+- Buat `STRAPI_WRITE_TOKEN` dari Strapi admin dengan permission minimal: read/create/update `tutorials`, read/create `categories`, dan read/create `tags`.
 - Jika domain backend bukan `api.tutorinbang.my.id`, ubah juga `next.config.ts` bagian `images.remotePatterns` agar hostname backend yang baru diizinkan untuk gambar Strapi.
 
 Build frontend:
@@ -667,7 +674,32 @@ pm2 logs tutorinbang-frontend
 pm2 save
 ```
 
-## 12. Reverse Proxy Frontend di aaPanel
+## 12. Cron AI Content Generator
+
+Admin panel frontend tersedia di:
+
+```text
+https://tutorinbang.my.id/admin
+```
+
+Generator otomatis harian tidak berjalan dari browser. Jalankan dari cron VPS agar endpoint Next.js dipanggil setiap jam 09.00 WIB.
+
+Buka crontab:
+
+```bash
+crontab -e
+```
+
+Tambahkan:
+
+```cron
+TZ=Asia/Jakarta
+0 9 * * * curl -fsS -X POST https://tutorinbang.my.id/api/cron/generate-content -H "Authorization: Bearer GANTI_SECRET_CRON" >> /var/log/tutorinbang-ai-cron.log 2>&1
+```
+
+Endpoint ini membuat satu draft tutorial di Strapi, bukan langsung publish. Review draft bisa dilakukan dari `/admin` atau Strapi admin.
+
+## 13. Reverse Proxy Frontend di aaPanel
 
 Di aaPanel:
 
@@ -711,7 +743,7 @@ curl -I https://tutorinbang.my.id
 curl -I https://tutorinbang.my.id/sitemap.xml
 ```
 
-## 13. Alur Update Setelah Deploy
+## 14. Alur Update Setelah Deploy
 
 ### Update Backend Strapi
 
@@ -735,7 +767,7 @@ pm2 restart tutorinbang-frontend
 pm2 save
 ```
 
-## 14. Backup
+## 15. Backup
 
 Backup yang wajib:
 
@@ -759,7 +791,7 @@ tar -czf /www/backup/mysql/strapi_uploads_$(date +%F).tar.gz /www/wwwroot/api.tu
 
 Anda juga bisa memakai fitur backup aaPanel untuk site dan database jika tersedia.
 
-## 15. Troubleshooting
+## 16. Troubleshooting
 
 ### JavaScript heap out of memory saat build
 
@@ -1035,7 +1067,7 @@ Transaction was implicitly committed, do not mix transactions and DDL with MySQL
 
 Penyebab Strapi mati pada kasus ini adalah baris `Missing jwtSecret`.
 
-## 16. Checklist Final
+## 17. Checklist Final
 
 - [ ] DNS frontend mengarah ke IP VPS.
 - [ ] DNS backend mengarah ke IP VPS.

@@ -92,6 +92,10 @@ export async function getTutorialsByTag(
     page = 1,
     pageSize = 12
 ): Promise<StrapiListResponse<StrapiTutorial>> {
+    if (tagSlug.startsWith("system-")) {
+        return { data: [], meta: { pagination: { page: 1, pageSize, pageCount: 0, total: 0 } } };
+    }
+
     try {
         const params = new URLSearchParams();
         params.set("populate", "*");

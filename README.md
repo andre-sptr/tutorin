@@ -30,3 +30,24 @@ NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
 
 # URL Utama Website Anda
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# AI chat dan AI content generator
+SUMOPOD_API_KEY=isi_api_key_ai
+
+# Admin panel /admin
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=uciha361
+ADMIN_SESSION_SECRET=isi_secret_panjang_random
+
+# Token tulis Strapi untuk membuat draft tutorial/kategori/tag
+STRAPI_WRITE_TOKEN=isi_api_token_strapi
+
+# Secret untuk endpoint cron /api/cron/generate-content
+CRON_SECRET=isi_secret_cron
+```
+
+Admin panel tersedia di `/admin`. Untuk menjalankan generator otomatis harian, panggil endpoint cron dengan header:
+
+```bash
+curl -fsS -X POST http://localhost:3000/api/cron/generate-content -H "Authorization: Bearer $CRON_SECRET"
+```
