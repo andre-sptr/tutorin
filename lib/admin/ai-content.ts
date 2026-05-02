@@ -12,7 +12,7 @@ export type GenerateAiContentResult = {
 };
 
 function getModelName(): string {
-    return process.env.AI_CONTENT_MODEL || "gpt-5.1";
+    return process.env.AI_CONTENT_MODEL || "claude-haiku-4-5";
 }
 
 function getAiClient() {
