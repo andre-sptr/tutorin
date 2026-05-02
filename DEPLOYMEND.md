@@ -397,7 +397,83 @@ Frontend membaca endpoint:
 - `/api/categories`
 - `/api/tags`
 
-Buat content type berikut di Strapi admin.
+Content-Type Builder Strapi hanya bisa dipakai di development mode. Jika Strapi berjalan dengan `NODE_ENV=production`, akan muncul pesan:
+
+```text
+Strapi is in production mode, editing content types is disabled. Please switch to development mode by starting your server with strapi develop.
+```
+
+Untuk setup awal, hentikan proses production lalu jalankan Strapi dalam development mode:
+
+```bash
+cd /www/wwwroot/api.tutorinbang.my.id/backend
+pm2 stop tutorinbang-strapi
+NODE_ENV=development npm run develop
+```
+
+Jika saat membuka admin muncul error seperti ini:
+
+```text
+Blocked request. This host ("api.tutorinbang.my.id") is not allowed.
+To allow this host, add "api.tutorinbang.my.id" to `server.allowedHosts` in vite.config.js.
+```
+
+Artinya Vite dev server milik Strapi Admin memblokir domain reverse proxy. Tambahkan allowlist host admin:
+
+```bash
+mkdir -p src/admin
+nano src/admin/vite.config.ts
+```
+
+Isi:
+
+```ts
+import { mergeConfig, type UserConfig } from 'vite';
+
+export default (config: UserConfig) => {
+  return mergeConfig(config, {
+    server: {
+      allowedHosts: ['api.tutorinbang.my.id'],
+    },
+  });
+};
+```
+
+Jika project Strapi Anda JavaScript, gunakan `src/admin/vite.config.js`:
+
+```js
+const { mergeConfig } = require('vite');
+
+module.exports = (config) => {
+  return mergeConfig(config, {
+    server: {
+      allowedHosts: ['api.tutorinbang.my.id'],
+    },
+  });
+};
+```
+
+Jalankan ulang development mode:
+
+```bash
+NODE_ENV=development npm run develop
+```
+
+Gunakan domain milik sendiri secara eksplisit. Hindari `allowedHosts: true` kecuali hanya untuk percobaan sangat sementara, karena itu mengizinkan host apa pun mengakses dev server.
+
+Setelah Strapi develop berjalan, buka:
+
+```text
+https://api.tutorinbang.my.id/admin
+```
+
+Buat content type berikut lewat `Content-Type Builder`.
+
+Catatan penting:
+
+- Jika hanya ingin menambah data kategori baru, lakukan dari `Content Manager`, bukan `Content-Type Builder`.
+- Jika menu `Category` belum ada di `Content Manager`, berarti collection type `Category` memang belum dibuat.
+- Setelah struktur content type selesai dibuat, hentikan `npm run develop` dengan `Ctrl+C`, lalu rebuild dan jalankan lagi mode production.
 
 ### Category
 
@@ -452,6 +528,16 @@ Penting:
 - Aktifkan `Draft & Publish` untuk `Tutorial`.
 - Publish setiap tutorial yang ingin muncul di frontend.
 - Upload gambar ke Media Library; frontend membaca path `/uploads/**`.
+
+Setelah semua content type selesai dibuat, kembali ke production mode:
+
+```bash
+npm run build
+pm2 restart tutorinbang-strapi
+pm2 save
+```
+
+Untuk production yang sudah live, jangan ubah struktur content type langsung di server tanpa backup. Alur yang lebih aman adalah membuat perubahan content type di environment development, commit file schema Strapi, lalu deploy ke server.
 
 ## 9. Set Permission Public API Strapi
 
