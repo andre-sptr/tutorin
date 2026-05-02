@@ -1,5 +1,4 @@
 import { Code, Users, Lightbulb, Rocket, Target, HeartHandshake } from "lucide-react";
-import Link from "next/link";
 
 export const metadata = {
   title: "Tentang Kami - TutorinBang",

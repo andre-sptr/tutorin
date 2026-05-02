@@ -1,5 +1,4 @@
 import { FileText } from "lucide-react";
-import Link from "next/link";
 
 export const metadata = {
   title: "Syarat & Ketentuan - TutorinBang",

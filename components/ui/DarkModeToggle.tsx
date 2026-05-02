@@ -1,38 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Sun, Moon } from "lucide-react";
 
+const THEME_CHANGE_EVENT = "themechange";
+
+function getStoredTheme() {
+    const saved = localStorage.getItem("theme");
+    return saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+
+function subscribeTheme(onStoreChange: () => void) {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    window.addEventListener("storage", onStoreChange);
+    window.addEventListener(THEME_CHANGE_EVENT, onStoreChange);
+    media.addEventListener("change", onStoreChange);
+
+    return () => {
+        window.removeEventListener("storage", onStoreChange);
+        window.removeEventListener(THEME_CHANGE_EVENT, onStoreChange);
+        media.removeEventListener("change", onStoreChange);
+    };
+}
+
+function applyTheme(isDark: boolean) {
+    document.documentElement.classList.toggle("dark", isDark);
+}
+
 export default function DarkModeToggle() {
-    const [isDark, setIsDark] = useState(false);
-    const [mounted, setMounted] = useState(false);
+    const isDark = useSyncExternalStore(subscribeTheme, getStoredTheme, () => false);
 
     useEffect(() => {
-        setMounted(true);
-        // Read saved preference or system preference
-        const saved = localStorage.getItem("theme");
-        if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-            setIsDark(true);
-            document.documentElement.classList.add("dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-        }
-    }, []);
+        applyTheme(isDark);
+    }, [isDark]);
 
     const toggle = () => {
         const newDark = !isDark;
-        setIsDark(newDark);
-        if (newDark) {
-            document.documentElement.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-        }
+        applyTheme(newDark);
+        localStorage.setItem("theme", newDark ? "dark" : "light");
+        window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
     };
-
-    // Prevent hydration mismatch
-    if (!mounted) return <div className="w-9 h-9" />;
 
     return (
         <button

@@ -2,9 +2,11 @@
 
 import { useEffect, useRef } from "react";
 
+type AdsByGoogleQueue = Array<Record<string, unknown>>;
+
 declare global {
     interface Window {
-        adsbygoogle: any;
+        adsbygoogle?: AdsByGoogleQueue;
     }
 }
 
@@ -27,8 +29,8 @@ export default function AdSenseSlot({ client = "ca-pub-9170878168905515", slot }
                         (window.adsbygoogle = window.adsbygoogle || []).push({});
                         isLoaded.current = true;
                         observer.disconnect();
-                    } catch (error: any) {
-                        if (!error?.message?.includes("already have ads")) {
+                    } catch (error: unknown) {
+                        if (!(error instanceof Error) || !error.message.includes("already have ads")) {
                             console.error("AdSense error:", error);
                         }
                     }

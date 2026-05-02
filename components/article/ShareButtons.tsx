@@ -1,19 +1,19 @@
 "use client";
 
 import { Link as LinkIcon, Check } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
+
+const subscribeToUrl = () => () => undefined;
+const getCurrentUrl = () => window.location.href;
+const getServerUrl = () => "";
 
 export default function ShareButtons({ title }: { title: string }) {
   const [copied, setCopied] = useState(false);
-  const [url, setUrl] = useState("");
-
-  useEffect(() => {
-    setUrl(window.location.href);
-  }, []);
+  const url = useSyncExternalStore(subscribeToUrl, getCurrentUrl, getServerUrl);
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {

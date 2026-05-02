@@ -1,6 +1,6 @@
 import Image from "next/image";
 import tutorinLogo from "../tutorin.png";
-import { Code, Users, PenTool, Cpu, Laptop, MessageCircle, Mail, Globe, CheckCircle } from "lucide-react";
+import { Code, PenTool, Cpu, Laptop, MessageCircle, Mail, Globe, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {

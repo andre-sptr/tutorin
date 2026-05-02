@@ -24,17 +24,17 @@ export default function Header() {
 
     // Close on route change
     useEffect(() => {
-        setMobileMenuOpen(false);
-        setMobileSearchOpen(false);
-        setShowSuggestions(false);
+        queueMicrotask(() => {
+            setMobileMenuOpen(false);
+            setMobileSearchOpen(false);
+            setShowSuggestions(false);
+        });
     }, [pathname]);
 
     // Fetch suggestions with debounce
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         if (query.trim().length < 2) {
-            setSuggestions([]);
-            setShowSuggestions(false);
             return;
         }
         debounceRef.current = setTimeout(async () => {
@@ -147,7 +147,6 @@ export default function Header() {
                                         placeholder="Cari tutorial..."
                                         aria-label="Cari tutorial"
                                         aria-autocomplete="list"
-                                        aria-expanded={showSuggestions}
                                         className="h-10 pl-10 pr-4 rounded-full bg-slate-100 dark:bg-slate-700 dark:text-slate-100 dark:placeholder-slate-400 border border-transparent text-sm focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all w-52 focus:w-72"
                                     />
                                 </div>

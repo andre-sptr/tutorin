@@ -13,7 +13,7 @@ export default function ReadingProgress() {
     // Estimate total words on mount for article pages
     useEffect(() => {
         if (!isArticlePage) {
-            setTimeRemaining(null);
+            totalWordsRef.current = 0;
             return;
         }
         const articleEl = document.getElementById("article-content");

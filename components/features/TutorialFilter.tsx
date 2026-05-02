@@ -26,8 +26,10 @@ export default function TutorialFilter({ categories, totalCount }: Props) {
 
     // Sync input if URL param changes externally (e.g. Header search)
     useEffect(() => {
-        setLocalQ(currentQ);
-        if (inputRef.current) inputRef.current.value = currentQ;
+        queueMicrotask(() => {
+            setLocalQ(currentQ);
+            if (inputRef.current) inputRef.current.value = currentQ;
+        });
     }, [currentQ]);
 
     const updateParams = useCallback(

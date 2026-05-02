@@ -20,7 +20,7 @@ export default function TableOfContents() {
     const elements = Array.from(articleContainer.querySelectorAll("h2, h3"));
     const headingData = elements.map((el) => {
       if (!el.id) {
-        el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') || `heading-${Math.random().toString(36).substr(2, 9)}`;
+        el.id = el.textContent?.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') || `heading-${Math.random().toString(36).slice(2, 11)}`;
       }
       return {
         id: el.id,
@@ -29,7 +29,7 @@ export default function TableOfContents() {
       };
     });
 
-    setHeadings(headingData);
+    queueMicrotask(() => setHeadings(headingData));
 
     const callback = (entries: IntersectionObserverEntry[]) => {
       const visibleHeadings = entries.filter(entry => entry.isIntersecting);
