@@ -23,7 +23,7 @@ export default function ScrollToTop() {
         <button
             onClick={scrollToTop}
             aria-label="Kembali ke atas"
-            className={`fixed bottom-6 right-20 z-50 w-11 h-11 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center transition-all duration-300 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+            className={`fixed bottom-6 right-20 z-30 w-11 h-11 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center transition-all duration-300 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
                 }`}
         >
             <ArrowUp className="w-5 h-5" />

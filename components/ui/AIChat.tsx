@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import { MessageCircle, X, Send, Loader2, Bot, User, Minimize2, RotateCcw, Mic } from "lucide-react";
+import { TextStreamChatTransport } from "ai";
+import { MessageCircle, X, Send, Loader2, Bot, User, RotateCcw, Mic } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -53,13 +53,34 @@ const MARKDOWN_COMPONENTS: Components = {
     blockquote: ({ children }) => <blockquote className="border-l-2 border-blue-400 pl-2 my-1 opacity-80">{children}</blockquote>,
 };
 
+type BrowserSpeechRecognitionEvent = {
+    results: SpeechRecognitionResultList;
+};
+
+type BrowserSpeechRecognition = {
+    lang: string;
+    interimResults: boolean;
+    maxAlternatives: number;
+    onstart: (() => void) | null;
+    onresult: ((event: BrowserSpeechRecognitionEvent) => void) | null;
+    onerror: (() => void) | null;
+    onend: (() => void) | null;
+    start: () => void;
+};
+
+type BrowserSpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
+
+type SpeechRecognitionWindow = Window & {
+    SpeechRecognition?: BrowserSpeechRecognitionConstructor;
+    webkitSpeechRecognition?: BrowserSpeechRecognitionConstructor;
+};
+
 export default function AIChat() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-    const [isMinimized, setIsMinimized] = useState(false);
 
     const { messages, sendMessage, status, setMessages } = useChat({
-        transport: new DefaultChatTransport({ api: "/api/ai-chat" }),
+        transport: new TextStreamChatTransport({ api: "/api/ai-chat" }),
         messages: [WELCOME_MESSAGE],
     });
 
@@ -67,19 +88,26 @@ export default function AIChat() {
     const isLoading = status === "streaming" || status === "submitted";
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value);
-    
+
+    const submitText = useCallback((text: string) => {
+        const trimmedText = text.trim();
+        if (!trimmedText || isLoading) return;
+
+        void sendMessage({ text: trimmedText });
+        setInput("");
+    }, [isLoading, sendMessage]);
+
     const handleSubmit = (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (!input.trim() || isLoading) return;
-        sendMessage({ text: input });
-        setInput("");
+        submitText(input);
     };
 
     const [isListening, setIsListening] = useState(false);
     const [hasNotification, setHasNotification] = useState(false);
+    const shouldShowNotification = hasNotification && !isOpen && messages.length <= 1;
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
-    const recognitionRef = useRef<any>(null);
+    const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
     const isHomepage = pathname === "/";
 
     useEffect(() => {
@@ -99,31 +127,28 @@ export default function AIChat() {
             const timer = setTimeout(() => setHasNotification(true), 5000);
             return () => clearTimeout(timer);
         }
-        setHasNotification(false);
     }, [isOpen, messages.length]);
 
     useEffect(() => {
-        if (isOpen && !isMinimized) {
+        if (isOpen) {
             messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }
-    }, [messages, isOpen, isMinimized]);
+    }, [messages, isOpen]);
 
     useEffect(() => {
-        if (isOpen && !isMinimized) {
+        if (isOpen) {
             setTimeout(() => inputRef.current?.focus(), 100);
         }
-    }, [isOpen, isMinimized]);
+    }, [isOpen]);
 
     const handleOpen = () => {
         setIsOpen(true);
-        setIsMinimized(false);
         setHasNotification(false);
         localStorage.setItem(AUTO_OPEN_KEY, "1");
     };
 
     const handleClose = () => {
         setIsOpen(false);
-        setIsMinimized(false);
     };
 
     const handleReset = () => {
@@ -134,7 +159,8 @@ export default function AIChat() {
         if (isListening) return;
 
         if (!recognitionRef.current) {
-            const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+            const speechWindow = window as SpeechRecognitionWindow;
+            const SpeechRecognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
             if (!SpeechRecognition) {
                 alert("Browser Anda tidak mendukung fitur input suara.");
                 return;
@@ -146,7 +172,7 @@ export default function AIChat() {
             recognition.maxAlternatives = 1;
 
             recognition.onstart = () => setIsListening(true);
-            recognition.onresult = (event: any) => {
+            recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
                 setInput(transcript);
             };
@@ -158,22 +184,19 @@ export default function AIChat() {
 
         try {
             recognitionRef.current.start();
-        } catch (e) {
+        } catch {
         }
     }, [isListening, setInput]);
 
     const handleChipClick = (chip: string) => {
         setInput(chip);
-        setTimeout(() => {
-            const event = { preventDefault: () => { } } as any;
-            handleSubmit(event);
-        }, 50);
+        submitText(chip);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            handleSubmit(e as any);
+            submitText(input);
         }
     };
 
@@ -184,10 +207,10 @@ export default function AIChat() {
                 <button
                     onClick={handleOpen}
                     aria-label="Buka AI Chat dengan Bang Tutor"
-                    className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center transition-all duration-300 group"
+                    className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-full bg-linear-to-br from-blue-600 to-indigo-600 text-white shadow-lg hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center transition-all duration-300 group"
                 >
                     <MessageCircle className="w-5 h-5" />
-                    {hasNotification && (
+                    {shouldShowNotification && (
                         <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
                     )}
                     {/* Tooltip */}
@@ -200,13 +223,10 @@ export default function AIChat() {
             {/* Chat Window */}
             {isOpen && (
                 <div
-                    className={`fixed right-4 md:right-6 z-50 flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300 ${isMinimized
-                        ? "bottom-6 w-64 h-14"
-                        : "bottom-6 w-[calc(100vw-2rem)] md:w-[400px] h-[560px] max-h-[80vh]"
-                        }`}
+                    className="fixed right-4 md:right-6 z-50 flex flex-col bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300 bottom-6 w-[calc(100vw-2rem)] md:w-100 h-140 max-h-[80vh]"
                 >
                     {/* Header */}
-                    <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex-shrink-0">
+                    <div className="flex items-center gap-3 px-4 py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white shrink-0">
                         <div className="relative">
                             <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
                                 <Bot className="w-5 h-5" />
@@ -227,13 +247,6 @@ export default function AIChat() {
                                 <RotateCcw className="w-3.5 h-3.5" />
                             </button>
                             <button
-                                onClick={() => setIsMinimized((p) => !p)}
-                                aria-label={isMinimized ? "Perbesar" : "Perkecil"}
-                                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                            >
-                                <Minimize2 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
                                 onClick={handleClose}
                                 aria-label="Tutup chat"
                                 className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
@@ -243,10 +256,9 @@ export default function AIChat() {
                         </div>
                     </div>
 
-                    {!isMinimized && (
-                        <>
-                            {/* Messages */}
-                            <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
+                    <>
+                        {/* Messages */}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
                                 {messages.map((msg: UIMessage) => {
                                     const textContent = msg.parts 
                                         ? msg.parts
@@ -271,8 +283,8 @@ export default function AIChat() {
                                                 className={`flex gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
                                             >
                                                 {/* Avatar */}
-                                                <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs font-bold ${msg.role === "assistant"
-                                                    ? "bg-gradient-to-br from-blue-600 to-indigo-600"
+                                                <div className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold ${msg.role === "assistant"
+                                                    ? "bg-linear-to-br from-blue-600 to-indigo-600"
                                                     : "bg-slate-500 dark:bg-slate-600"
                                                     }`}>
                                                 {msg.role === "assistant" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
@@ -281,7 +293,7 @@ export default function AIChat() {
                                             {/* Bubble */}
                                             <div className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${msg.role === "assistant"
                                                 ? "bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-sm"
-                                                : "bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-tr-sm"
+                                                : "bg-linear-to-br from-blue-600 to-indigo-600 text-white rounded-tr-sm"
                                                 }`}>
                                                 {reasoningContent && (
                                                     <div className="mb-2 p-2 bg-blue-50/50 dark:bg-blue-900/20 border-l-2 border-blue-400 rounded text-xs text-slate-500 dark:text-slate-400 italic">
@@ -301,13 +313,14 @@ export default function AIChat() {
                                                 )}
                                             </div>
                                         </div>
+                                        </div>
                                     );
                                 })}
 
                                 {/* Loading indicator */}
                                 {isLoading && (
                                     <div className="flex gap-2.5">
-                                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex-shrink-0 flex items-center justify-center">
+                                        <div className="w-7 h-7 rounded-full bg-linear-to-br from-blue-600 to-indigo-600 shrink-0 flex items-center justify-center">
                                             <Bot className="w-4 h-4 text-white" />
                                         </div>
                                         <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
@@ -319,11 +332,11 @@ export default function AIChat() {
                                 )}
 
                                 <div ref={messagesEndRef} />
-                            </div>
+                        </div>
 
-                            {/* Quick suggestion chips */}
-                            {messages.length <= 1 && (
-                                <div className="px-4 pb-2 flex flex-wrap gap-1.5">
+                        {/* Quick suggestion chips */}
+                        {messages.length <= 1 && (
+                            <div className="px-4 pb-2 flex flex-wrap gap-1.5">
                                     {CHIP_SUGGESTIONS.map((chip) => (
                                         <button
                                             key={chip}
@@ -333,17 +346,17 @@ export default function AIChat() {
                                             {chip}
                                         </button>
                                     ))}
-                                </div>
-                            )}
+                            </div>
+                        )}
 
-                            {/* Input area */}
-                            <form onSubmit={handleSubmit} className="px-3 py-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 items-end bg-white dark:bg-slate-900 flex-shrink-0 w-full">
+                        {/* Input area */}
+                        <form onSubmit={handleSubmit} className="px-3 py-3 border-t border-slate-100 dark:border-slate-800 flex gap-2 items-end bg-white dark:bg-slate-900 shrink-0 w-full">
                                 <button
                                     type="button"
                                     onClick={startListening}
                                     disabled={isLoading}
                                     aria-label="Input Suara"
-                                    className={`p-2 rounded-xl border flex items-center justify-center transition-all h-10 w-10 flex-shrink-0 ${isListening ? 'border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                    className={`p-2 rounded-xl border flex items-center justify-center transition-all h-10 w-10 shrink-0 ${isListening ? 'border-red-500 text-red-500 bg-red-50 dark:bg-red-900/20' : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                                 >
                                     <Mic className={`w-4 h-4 ${isListening ? 'animate-pulse' : ''}`} />
                                 </button>
@@ -362,7 +375,7 @@ export default function AIChat() {
                                     type="submit"
                                     disabled={!input.trim() || isLoading}
                                     aria-label="Kirim pesan"
-                                    className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center flex-shrink-0 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md"
+                                    className="w-10 h-10 rounded-xl bg-linear-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shrink-0 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md"
                                 >
                                     {isLoading ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -370,9 +383,8 @@ export default function AIChat() {
                                         <Send className="w-4 h-4" />
                                     )}
                                 </button>
-                            </form>
-                        </>
-                    )}
+                        </form>
+                    </>
                 </div>
             )}
         </>
