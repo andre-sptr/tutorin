@@ -48,7 +48,7 @@ export default function DarkModeToggle() {
             className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
         >
             {isDark ? (
-                <Sun className="w-4.5 h-4.5 w-[18px] h-[18px]" />
+                <Sun className="w-[18px] h-[18px]" />
             ) : (
                 <Moon className="w-[18px] h-[18px]" />
             )}

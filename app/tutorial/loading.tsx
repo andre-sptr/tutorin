@@ -1,4 +1,3 @@
-import { BookOpen, GraduationCap, Layers } from "lucide-react";
 import { TutorialGridSkeleton } from "@/components/ui/SkeletonCard";
 
 export default function Loading() {

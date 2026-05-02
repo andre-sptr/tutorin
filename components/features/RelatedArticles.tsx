@@ -4,7 +4,7 @@ import Image from "next/image";
 import { BookOpen, ArrowRight } from "lucide-react";
 
 type Props = {
-    articles: StrapiTutorial[];
+    articles?: StrapiTutorial[] | null;
 };
 
 export default function RelatedArticles({ articles }: Props) {
@@ -36,7 +36,7 @@ export default function RelatedArticles({ articles }: Props) {
                                         sizes="(max-width: 640px) 100vw, 33vw"
                                     />
                                 ) : (
-                                    <BookOpen className="w-8 h-8 text-slate-300" />
+                                    <BookOpen className="w-8 h-8 text-slate-300" role="img" aria-label="No image available" />
                                 )}
                             </div>
                             <div className="p-3 md:p-4 flex flex-col flex-1">

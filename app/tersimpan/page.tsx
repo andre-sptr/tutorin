@@ -4,21 +4,13 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import type { SavedArticle } from "@/components/article/BookmarkButton";
 import Link from "next/link";
 import { Bookmark, Trash2, ArrowRight } from "lucide-react";
-import { useState, useEffect } from "react";
 
 export default function SavedArticlesPage() {
     const [savedArticles, setSavedArticles] = useLocalStorage<SavedArticle[]>("tutorinbang_saved", []);
-    const [isHydrated, setIsHydrated] = useState(false);
-
-    useEffect(() => {
-        setIsHydrated(true);
-    }, []);
 
     const removeArticle = (slug: string) => {
         setSavedArticles(savedArticles.filter(a => a.slug !== slug));
     };
-
-    if (!isHydrated) return <div className="min-h-screen py-24 bg-slate-50 dark:bg-slate-900"></div>;
 
     return (
         <main className="min-h-screen py-8 md:py-16 bg-slate-50 dark:bg-slate-900">

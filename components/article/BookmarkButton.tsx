@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Bookmark } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
@@ -12,13 +11,7 @@ export type SavedArticle = {
 
 export default function BookmarkButton({ tutorial }: { tutorial: SavedArticle }) {
     const [savedArticles, setSavedArticles] = useLocalStorage<SavedArticle[]>("tutorinbang_saved", []);
-    const [isSaved, setIsSaved] = useState(false);
-    const [isHydrated, setIsHydrated] = useState(false);
-
-    useEffect(() => {
-        setIsHydrated(true);
-        setIsSaved(savedArticles.some(a => a.slug === tutorial.slug));
-    }, [savedArticles, tutorial.slug]);
+    const isSaved = savedArticles.some(a => a.slug === tutorial.slug);
 
     const toggleSave = () => {
         if (isSaved) {
@@ -27,14 +20,6 @@ export default function BookmarkButton({ tutorial }: { tutorial: SavedArticle })
             setSavedArticles([...savedArticles, tutorial]);
         }
     };
-
-    if (!isHydrated) {
-        return (
-            <button className="p-2 rounded-full bg-slate-100 text-slate-400 dark:bg-slate-800" disabled>
-                <Bookmark className="w-5 h-5" />
-            </button>
-        );
-    }
 
     return (
         <button

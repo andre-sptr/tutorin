@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { streamText } from "ai";
+import { streamText, type ModelMessage } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "edge";
@@ -39,37 +39,70 @@ Cara menjawab:
 Contoh gaya bahasa:
 "Tenang Bro, masalah ini sering banget terjadi! Coba ikuti langkah-langkah berikut ya..."`;
 
+type ChatRole = "user" | "assistant";
+
+type IncomingChatMessage = {
+    role?: unknown;
+    content?: unknown;
+    parts?: unknown;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null;
+}
+
+function isChatRole(role: unknown): role is ChatRole {
+    return role === "user" || role === "assistant";
+}
+
+function isIncomingChatMessage(message: unknown): message is IncomingChatMessage & { role: ChatRole } {
+    return isRecord(message) && isChatRole(message.role);
+}
+
+function getMessageContent(message: IncomingChatMessage): string {
+    if (typeof message.content === "string") return message.content;
+    if (!Array.isArray(message.parts)) return "";
+
+    return message.parts
+        .map((part) => (isRecord(part) && typeof part.text === "string" ? part.text : ""))
+        .join("");
+}
+
 export async function POST(request: NextRequest) {
     if (!SUMOPOD_API_KEY) {
         return NextResponse.json({ error: "API key tidak dikonfigurasi" }, { status: 500 });
     }
 
     try {
-        const { messages } = await request.json();
+        const body = (await request.json()) as { messages?: unknown };
+        const incomingMessages = Array.isArray(body.messages) ? body.messages : [];
 
-        const cleanMessages = messages
-            .filter((m: any) => m.role === 'user' || m.role === 'assistant')
-            .map((m: any) => ({
-                role: m.role,
-                content: typeof m.content === 'string' ? m.content : (Array.isArray(m.parts) ? m.parts.map((p: any) => p.text || "").join("") : "")
+        const cleanMessages: ModelMessage[] = incomingMessages
+            .filter(isIncomingChatMessage)
+            .map((message) => ({
+                role: message.role,
+                content: getMessageContent(message),
             }))
-            .filter((m: any) => m.content.trim() !== "");
+            .filter((message) => message.content.trim() !== "");
 
-        const modelMessages = cleanMessages.length > 0 && cleanMessages[0].role === 'assistant'
+        const finalMessages = cleanMessages.length > 0 && cleanMessages[0].role === 'assistant'
             ? cleanMessages.slice(1)
             : cleanMessages;
 
-        let finalMessages = cleanMessages.length > 0 && cleanMessages[0].role === 'assistant'
-            ? cleanMessages.slice(1)
-            : cleanMessages;
-
-        if (finalMessages.length > 0 && finalMessages[0].role === 'user') {
-            finalMessages[0].content = `${SYSTEM_PROMPT}\n\nPERTANYAAN USER:\n${finalMessages[0].content}`;
-        }
+        const messagesWithPrompt: ModelMessage[] =
+            finalMessages.length > 0 && finalMessages[0].role === 'user'
+                ? [
+                    {
+                        ...finalMessages[0],
+                        content: `${SYSTEM_PROMPT}\n\nPERTANYAAN USER:\n${finalMessages[0].content}`,
+                    },
+                    ...finalMessages.slice(1),
+                ]
+                : finalMessages;
 
         const result = streamText({
             model: sumopod("gpt-5.1"),
-            messages: finalMessages as any,
+            messages: messagesWithPrompt,
         });
 
         return result.toTextStreamResponse();

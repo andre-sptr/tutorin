@@ -24,7 +24,29 @@ function InlineText({ node }: { node: StrapiTextNode | StrapiLinkNode }) {
     return <>{content}</>;
 }
 
-function Block({ node }: { node: StrapiBlockNode }) {
+function getTextContent(children: StrapiTextNode[]): string {
+    return children.map((child) => child.text).join("");
+}
+
+function createHeadingIdFactory() {
+    const usedIds = new Map<string, number>();
+
+    return (text: string) => {
+        const slug = text
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+        const baseId = slug || "heading";
+        const safeBaseId = /^[0-9-]/.test(baseId) ? `h-${baseId}` : baseId;
+        const count = usedIds.get(safeBaseId) ?? 0;
+
+        usedIds.set(safeBaseId, count + 1);
+        return count === 0 ? safeBaseId : `${safeBaseId}-${count + 1}`;
+    };
+}
+
+function Block({ node, getHeadingId }: { node: StrapiBlockNode; getHeadingId: (text: string) => string }) {
     switch (node.type) {
         case "paragraph": {
             const isEmpty = node.children.length === 1 && node.children[0].type === "text" && node.children[0].text === "";
@@ -40,7 +62,7 @@ function Block({ node }: { node: StrapiBlockNode }) {
 
         case "heading": {
             const Tag = `h${node.level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-            const idText = node.children.map(c => c.text).join("").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+            const idText = getHeadingId(getTextContent(node.children));
             return (
                 <Tag id={idText}>
                     {node.children.map((child, i) => (
@@ -86,8 +108,17 @@ function Block({ node }: { node: StrapiBlockNode }) {
             );
 
         case "image": {
-            const imgUrl = getStrapiMediaUrl(node.image?.url);
+            const rawImgUrl = node.image?.url;
             const altText = node.image?.alternativeText || "";
+            if (!rawImgUrl) {
+                return altText ? (
+                    <figure className="my-4 md:my-8">
+                        <figcaption className="text-center text-sm text-slate-500 mt-2">{altText}</figcaption>
+                    </figure>
+                ) : null;
+            }
+
+            const imgUrl = getStrapiMediaUrl(rawImgUrl);
             return (
                 <figure className="my-4 md:my-8">
                     <div className="relative w-full rounded-xl overflow-hidden" style={{ aspectRatio: `${node.image?.width || 16} / ${node.image?.height || 9}` }}>
@@ -118,10 +149,12 @@ type Props = {
 export default function StrapiBlocksRenderer({ content }: Props) {
     if (!content || !Array.isArray(content)) return null;
 
+    const getHeadingId = createHeadingIdFactory();
+
     return (
         <>
             {content.map((block, i) => (
-                <Block key={i} node={block} />
+                <Block key={i} node={block} getHeadingId={getHeadingId} />
             ))}
         </>
     );

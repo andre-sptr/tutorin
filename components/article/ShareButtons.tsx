@@ -1,7 +1,7 @@
 "use client";
 
 import { Link as LinkIcon, Check } from "lucide-react";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 const subscribeToUrl = () => () => undefined;
 const getCurrentUrl = () => window.location.href;
@@ -9,13 +9,24 @@ const getServerUrl = () => "";
 
 export default function ShareButtons({ title }: { title: string }) {
   const [copied, setCopied] = useState(false);
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const url = useSyncExternalStore(subscribeToUrl, getCurrentUrl, getServerUrl);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+    };
+  }, []);
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(url);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+      copiedTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+        copiedTimeoutRef.current = null;
+      }, 2000);
     } catch (err) {
       console.error("Gagal copy link", err);
     }
