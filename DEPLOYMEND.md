@@ -28,11 +28,11 @@ Stack yang dipakai:
 
 - aaPanel sebagai panel server.
 - Nginx dari aaPanel sebagai reverse proxy.
-- PostgreSQL untuk database Strapi.
+- MySQL untuk database Strapi.
 - Node.js LTS, rekomendasi Node.js 22.
 - PM2 untuk menjalankan Strapi dan Next.js sebagai service.
 
-Catatan versi Strapi: dokumentasi Strapi 5 saat ini mendukung Node.js LTS `v20`, `v22`, dan `v24`, serta PostgreSQL minimal `14.0`. PostgreSQL dipilih karena lebih cocok untuk production dibanding SQLite.
+Catatan versi Strapi: dokumentasi Strapi 5 saat ini mendukung Node.js LTS `v20`, `v22`, dan `v24`, serta MySQL minimal `8.0`. MySQL dipakai di panduan ini karena umum tersedia di aaPanel.
 
 ## 2. Install aaPanel di Ubuntu
 
@@ -61,7 +61,7 @@ Setelah login aaPanel:
 
 1. Buka `App Store`.
 2. Install `Nginx`.
-3. Install `PostgreSQL` jika tersedia di App Store.
+3. Install `MySQL` dari App Store.
 4. Install `PM2 Manager` jika tersedia.
 5. Aktifkan firewall aaPanel untuk port:
    - `80`
@@ -101,54 +101,43 @@ Jalankan command yang diberikan oleh output `pm2 startup`, lalu nanti setelah se
 pm2 save
 ```
 
-## 4. Setup PostgreSQL untuk Strapi
+## 4. Setup MySQL untuk Strapi
 
 ### Opsi A: Lewat aaPanel
 
-Jika aaPanel Anda punya PostgreSQL manager:
+Jika aaPanel Anda punya MySQL manager:
 
-1. Buka `Database` atau plugin PostgreSQL.
+1. Buka `Database`.
 2. Buat database: `tutorinbang_strapi`
 3. Buat user: `strapi_user`
 4. Buat password kuat.
 5. Pastikan host database lokal: `127.0.0.1`
-6. Port default PostgreSQL: `5432`
+6. Port default MySQL: `3306`
 
 ### Opsi B: Lewat SSH
 
-Jika PostgreSQL tidak tersedia di aaPanel:
+Jika MySQL belum tersedia di aaPanel:
 
 ```bash
-apt install -y postgresql postgresql-contrib
-systemctl enable postgresql
-systemctl start postgresql
+apt install -y mysql-server
+systemctl enable mysql
+systemctl start mysql
 ```
 
 Buat database dan user:
 
 ```bash
-sudo -u postgres psql
+mysql -u root -p
 ```
 
-Di prompt PostgreSQL:
+Di prompt MySQL:
 
 ```sql
-CREATE DATABASE tutorinbang_strapi;
-CREATE USER strapi_user WITH ENCRYPTED PASSWORD 'GANTI_PASSWORD_DATABASE_YANG_KUAT';
-GRANT ALL PRIVILEGES ON DATABASE tutorinbang_strapi TO strapi_user;
-\q
-```
-
-Untuk PostgreSQL 15 ke atas, masuk ke database dan beri hak schema:
-
-```bash
-sudo -u postgres psql -d tutorinbang_strapi
-```
-
-```sql
-GRANT ALL ON SCHEMA public TO strapi_user;
-ALTER SCHEMA public OWNER TO strapi_user;
-\q
+CREATE DATABASE tutorinbang_strapi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'strapi_user'@'localhost' IDENTIFIED BY 'GANTI_PASSWORD_DATABASE_YANG_KUAT';
+GRANT ALL PRIVILEGES ON tutorinbang_strapi.* TO 'strapi_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
 ```
 
 ## 5. Install Strapi Backend
@@ -163,7 +152,7 @@ cd /www/wwwroot/api.tutorinbang.my.id
 Buat project Strapi:
 
 ```bash
-npx create-strapi@latest backend --use-npm --dbclient postgres --dbhost 127.0.0.1 --dbport 5432 --dbname tutorinbang_strapi --dbusername strapi_user --dbpassword 'GANTI_PASSWORD_DATABASE_YANG_KUAT'
+npx create-strapi@latest backend --use-npm --dbclient mysql --dbhost 127.0.0.1 --dbport 3306 --dbname tutorinbang_strapi --dbusername strapi_user --dbpassword 'GANTI_PASSWORD_DATABASE_YANG_KUAT'
 ```
 
 Saat prompt Strapi muncul:
@@ -207,9 +196,9 @@ TRANSFER_TOKEN_SALT=GANTI_TRANSFER_TOKEN_SALT
 JWT_SECRET=GANTI_JWT_SECRET
 ENCRYPTION_KEY=GANTI_ENCRYPTION_KEY
 
-DATABASE_CLIENT=postgres
+DATABASE_CLIENT=mysql
 DATABASE_HOST=127.0.0.1
-DATABASE_PORT=5432
+DATABASE_PORT=3306
 DATABASE_NAME=tutorinbang_strapi
 DATABASE_USERNAME=strapi_user
 DATABASE_PASSWORD=GANTI_PASSWORD_DATABASE_YANG_KUAT
@@ -629,22 +618,22 @@ pm2 save
 
 Backup yang wajib:
 
-- Database PostgreSQL.
+- Database MySQL.
 - Folder upload Strapi: `/www/wwwroot/api.tutorinbang.my.id/backend/public/uploads`
 - File `.env` backend.
 - File `.env` frontend.
 
-Backup PostgreSQL manual:
+Backup MySQL manual:
 
 ```bash
-mkdir -p /www/backup/postgresql
-pg_dump -U strapi_user -h 127.0.0.1 tutorinbang_strapi > /www/backup/postgresql/tutorinbang_strapi_$(date +%F).sql
+mkdir -p /www/backup/mysql
+mysqldump -u strapi_user -p tutorinbang_strapi > /www/backup/mysql/tutorinbang_strapi_$(date +%F).sql
 ```
 
 Backup upload:
 
 ```bash
-tar -czf /www/backup/postgresql/strapi_uploads_$(date +%F).tar.gz /www/wwwroot/api.tutorinbang.my.id/backend/public/uploads
+tar -czf /www/backup/mysql/strapi_uploads_$(date +%F).tar.gz /www/wwwroot/api.tutorinbang.my.id/backend/public/uploads
 ```
 
 Anda juga bisa memakai fitur backup aaPanel untuk site dan database jika tersedia.
@@ -723,7 +712,7 @@ pm2 restart tutorinbang-strapi
 
 - [ ] DNS frontend mengarah ke IP VPS.
 - [ ] DNS backend mengarah ke IP VPS.
-- [ ] aaPanel, Nginx, Node.js, PM2, dan PostgreSQL terinstall.
+- [ ] aaPanel, Nginx, Node.js, PM2, dan MySQL terinstall.
 - [ ] Strapi berjalan di PM2 dengan nama `tutorinbang-strapi`.
 - [ ] Strapi bisa diakses dari `https://api.tutorinbang.my.id/admin`.
 - [ ] Content type `Tutorial`, `Category`, dan `Tag` sudah dibuat.
