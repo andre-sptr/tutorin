@@ -915,6 +915,66 @@ npm run build
 pm2 restart tutorinbang-strapi
 ```
 
+### `/admin` Not Found atau `index.html` tidak ditemukan
+
+Error di log PM2:
+
+```text
+Error: ENOENT: no such file or directory, open '/www/wwwroot/api.tutorinbang.my.id/backend/node_modules/@strapi/admin/dist/server/server/build/index.html'
+```
+
+Artinya Strapi berjalan dalam production mode, tetapi admin panel belum berhasil dibuild. Production mode tidak menjalankan Vite dev server; Strapi harus punya hasil build admin berupa `index.html`.
+
+Masuk ke folder backend:
+
+```bash
+cd /www/wwwroot/api.tutorinbang.my.id/backend
+```
+
+Pastikan dependency lengkap:
+
+```bash
+npm install
+```
+
+Build ulang admin:
+
+```bash
+npm run build
+```
+
+Jika VPS kecil dan build gagal karena memory, gunakan:
+
+```bash
+export NODE_OPTIONS="--max-old-space-size=2048"
+npm run build
+unset NODE_OPTIONS
+```
+
+Pastikan file admin build sudah ada:
+
+```bash
+find node_modules/@strapi/admin -path '*build/index.html' -print
+```
+
+Jika command di atas tidak menghasilkan path apa pun, berarti build belum sukses. Baca ulang output `npm run build` sampai benar-benar selesai tanpa error.
+
+Restart Strapi:
+
+```bash
+pm2 restart tutorinbang-strapi
+pm2 logs tutorinbang-strapi
+```
+
+Lalu test:
+
+```bash
+curl -I http://127.0.0.1:1337/admin
+curl -I https://api.tutorinbang.my.id/admin
+```
+
+Jangan menjalankan production dengan `NODE_ENV=production npm run start` sebelum `npm run build` berhasil.
+
 ### Missing jwtSecret saat menjalankan Strapi
 
 Error:
