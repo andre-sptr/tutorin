@@ -185,7 +185,7 @@ nano .env
 Contoh konfigurasi:
 
 ```env
-HOST=0.0.0.0
+HOST=127.0.0.1
 PORT=1337
 NODE_ENV=production
 
@@ -217,7 +217,7 @@ Gunakan konfigurasi seperti ini:
 
 ```ts
 export default ({ env }) => ({
-  host: env('HOST', '0.0.0.0'),
+  host: env('HOST', '127.0.0.1'),
   port: env.int('PORT', 1337),
   url: env('PUBLIC_URL', 'http://localhost:1337'),
   proxy: {
@@ -229,11 +229,36 @@ export default ({ env }) => ({
 });
 ```
 
+Pastikan plugin `users-permissions` membaca `JWT_SECRET`. Jika file belum ada, buat:
+
+```bash
+nano config/plugins.ts
+```
+
+Isi:
+
+```ts
+export default ({ env }) => ({
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET'),
+      jwt: {
+        expiresIn: '7d',
+      },
+    },
+  },
+});
+```
+
+Jika `config/plugins.ts` sudah ada, jangan overwrite isi lama. Tambahkan blok `'users-permissions'` ke object export yang sudah ada.
+
 Build admin panel Strapi:
 
 ```bash
 npm run build
 ```
+
+Jika VPS hanya memiliki RAM 1-2 GB dan build gagal karena JavaScript heap out of memory, lihat bagian [JavaScript heap out of memory saat build](#javascript-heap-out-of-memory-saat-build).
 
 Test jalan lokal:
 
@@ -347,6 +372,14 @@ Test:
 ```bash
 curl -I https://api.tutorinbang.my.id/_health
 ```
+
+Pastikan port Strapi tidak terbuka langsung ke publik. Dari VPS, cek Strapi hanya listen di localhost:
+
+```bash
+ss -ltnp | grep 1337
+```
+
+Output yang aman terlihat seperti `127.0.0.1:1337`. Jika terlihat `0.0.0.0:1337`, ubah `.env` backend menjadi `HOST=127.0.0.1`, restart Strapi, dan pastikan firewall aaPanel tidak membuka port `1337`.
 
 Strapi admin akan tersedia di:
 
@@ -498,6 +531,8 @@ Build frontend:
 npm run build
 ```
 
+Jika VPS hanya memiliki RAM 1-2 GB dan build gagal karena JavaScript heap out of memory, lihat bagian [JavaScript heap out of memory saat build](#javascript-heap-out-of-memory-saat-build).
+
 Test manual:
 
 ```bash
@@ -640,6 +675,92 @@ Anda juga bisa memakai fitur backup aaPanel untuk site dan database jika tersedi
 
 ## 15. Troubleshooting
 
+### JavaScript heap out of memory saat build
+
+Error seperti ini biasanya muncul saat `npm run build` untuk Strapi atau Next.js kehabisan memory di VPS:
+
+```text
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+Aborted (core dumped)
+```
+
+Dari log `973.9 (988.6) MB`, Node.js sedang mentok di sekitar 1 GB heap. Penyebab paling umum:
+
+- RAM VPS terlalu kecil untuk proses build.
+- Swap belum aktif.
+- Node.js heap limit default terlalu rendah untuk build Strapi/Next.js.
+- Strapi dan frontend sedang berjalan bersamaan saat build, sehingga RAM tersisa makin kecil.
+
+Cek kondisi RAM dan swap:
+
+```bash
+free -h
+swapon --show
+df -h /
+```
+
+Jika swap belum ada, buat swap 2 GB. Untuk VPS 1 GB RAM, gunakan 2-4 GB swap:
+
+```bash
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+cp /etc/fstab /etc/fstab.bak
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+free -h
+```
+
+Jika `fallocate` gagal, gunakan command ini sebagai pengganti:
+
+```bash
+dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+cp /etc/fstab /etc/fstab.bak
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+free -h
+```
+
+Hentikan sementara service yang tidak dibutuhkan saat build:
+
+```bash
+pm2 stop tutorinbang-strapi
+pm2 stop tutorinbang-frontend
+```
+
+Jalankan build dengan heap lebih besar:
+
+```bash
+export NODE_OPTIONS="--max-old-space-size=2048"
+npm run build
+unset NODE_OPTIONS
+```
+
+Jika VPS memiliki RAM 4 GB atau lebih, bisa gunakan:
+
+```bash
+export NODE_OPTIONS="--max-old-space-size=4096"
+npm run build
+unset NODE_OPTIONS
+```
+
+Setelah build berhasil, jalankan lagi service:
+
+```bash
+pm2 restart tutorinbang-strapi
+pm2 restart tutorinbang-frontend
+pm2 save
+```
+
+Jika error masih muncul:
+
+- Pastikan Node.js memakai versi LTS yang didukung Strapi, misalnya Node.js 22.
+- Jalankan build backend dan frontend bergantian, jangan bersamaan.
+- Gunakan VPS minimal 2 GB RAM untuk production ringan, 4 GB lebih aman.
+- Jika tetap gagal di VPS kecil, build di mesin lokal/CI lalu deploy hasil build ke server.
+
 ### 502 Bad Gateway
 
 Cek PM2:
@@ -707,6 +828,66 @@ Lalu rebuild dan restart:
 npm run build
 pm2 restart tutorinbang-strapi
 ```
+
+### Missing jwtSecret saat menjalankan Strapi
+
+Error:
+
+```text
+Missing jwtSecret. Please, set configuration variable "jwtSecret" for the users-permissions plugin in config/plugins.js
+```
+
+Artinya plugin `users-permissions` tidak menemukan secret untuk menandatangani JWT. Biasanya ini terjadi karena `JWT_SECRET` belum ada di `.env`, atau sudah ada tetapi belum dibaca dari `config/plugins.ts`.
+
+Pastikan `.env` backend memiliki:
+
+```env
+JWT_SECRET=GANTI_JWT_SECRET_YANG_KUAT
+```
+
+Jika perlu generate nilai baru:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+Buat atau edit `config/plugins.ts`:
+
+```bash
+nano config/plugins.ts
+```
+
+Isi minimal:
+
+```ts
+export default ({ env }) => ({
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET'),
+      jwt: {
+        expiresIn: '7d',
+      },
+    },
+  },
+});
+```
+
+Jika file tersebut sudah berisi konfigurasi plugin lain, merge blok `'users-permissions'` ke object yang sudah ada.
+
+Rebuild dan jalankan ulang:
+
+```bash
+npm run build
+NODE_ENV=production npm run start
+```
+
+Catatan: warning MySQL seperti ini biasanya muncul saat Strapi menjalankan migration dan bukan penyebab Strapi mati:
+
+```text
+Transaction was implicitly committed, do not mix transactions and DDL with MySQL (#805)
+```
+
+Penyebab Strapi mati pada kasus ini adalah baris `Missing jwtSecret`.
 
 ## 16. Checklist Final
 
