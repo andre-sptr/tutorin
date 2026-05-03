@@ -603,6 +603,12 @@ Isi:
 NEXT_PUBLIC_STRAPI_URL=https://api.tutorinbang.my.id
 NEXT_PUBLIC_SITE_URL=https://tutorinbang.my.id
 SUMOPOD_API_KEY=GANTI_API_KEY_ANDA
+AI_IMAGE_ENABLED=false
+AI_IMAGE_PROVIDER=vertex
+AI_IMAGE_MODEL=gemini-3-pro-image-preview
+GEMINI_API_KEY=GANTI_VERTEX_AI_EXPRESS_API_KEY
+AI_IMAGE_ASPECT_RATIO=16:9
+AI_IMAGE_MIME_TYPE=image/png
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=uciha361
 ADMIN_SESSION_SECRET=GANTI_SECRET_PANJANG_RANDOM
@@ -614,8 +620,9 @@ Catatan:
 
 - Jangan commit `.env`.
 - `SUMOPOD_API_KEY` dipakai oleh route `/api/ai-chat` dan generator konten AI di admin panel.
+- `AI_IMAGE_ENABLED=true` mengaktifkan generator `featuredImage` untuk draft AI lewat Vertex AI Express (`@google/genai` dengan `GEMINI_API_KEY`). Jika key/model image belum siap atau provider gagal, draft tetap dibuat tanpa gambar dan admin panel menampilkan warning.
 - `ADMIN_SESSION_SECRET` dan `CRON_SECRET` gunakan nilai random panjang. Contoh generate: `openssl rand -base64 32`.
-- Buat `STRAPI_WRITE_TOKEN` dari Strapi admin dengan permission minimal: read/create/update `tutorials`, read/create `categories`, dan read/create `tags`.
+- Buat `STRAPI_WRITE_TOKEN` dari Strapi admin dengan permission minimal: read/create/update `tutorials`, read/create `categories`, read/create `tags`, dan upload media.
 - Jika domain backend bukan `api.tutorinbang.my.id`, ubah juga `next.config.ts` bagian `images.remotePatterns` agar hostname backend yang baru diizinkan untuk gambar Strapi.
 
 Build frontend:

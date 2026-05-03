@@ -27,6 +27,8 @@ type AdminTutorial = {
     adminUrl: string;
     publicUrl: string;
     metaDescription: string | null;
+    featuredImageUrl: string | null;
+    generationWarnings?: string[];
 };
 
 type SessionState = {
@@ -141,11 +143,12 @@ export default function AdminPanel() {
         setGenerating(true);
         setNotice({ type: "info", message: "AI sedang membuat draft baru. Proses ini bisa memakan waktu." });
         try {
-            const data = await readJson<{ tutorial: AdminTutorial; attempt: number }>(
+            const data = await readJson<{ tutorial: AdminTutorial; attempt: number; warnings?: string[] }>(
                 await fetch("/api/admin/ai/generate", { method: "POST" }),
             );
             setTutorials((current) => [data.tutorial, ...current.filter((item) => item.documentId !== data.tutorial.documentId)]);
-            setNotice({ type: "success", message: `Draft AI berhasil dibuat pada attempt ke-${data.attempt}.` });
+            const warnings = data.warnings?.length ? ` Catatan: ${data.warnings.join(" ")}` : "";
+            setNotice({ type: "success", message: `Draft AI berhasil dibuat pada attempt ke-${data.attempt}.${warnings}` });
         } catch (error) {
             setNotice({ type: "error", message: error instanceof Error ? error.message : "Generate gagal." });
         } finally {
@@ -384,6 +387,14 @@ export default function AdminPanel() {
                                             <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
                                                 {tutorial.metaDescription || "Tidak ada meta description."}
                                             </p>
+                                            <p className={`mt-2 text-xs font-semibold ${tutorial.featuredImageUrl ? "text-emerald-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-300"}`}>
+                                                {tutorial.featuredImageUrl ? "Featured image tersedia" : "Featured image belum tersedia"}
+                                            </p>
+                                            {tutorial.generationWarnings?.length ? (
+                                                <p className="mt-2 text-xs leading-5 text-amber-700 dark:text-amber-300">
+                                                    {tutorial.generationWarnings.join(" ")}
+                                                </p>
+                                            ) : null}
                                             <div className="mt-3 flex flex-wrap gap-2">
                                                 {tutorial.tags.map((tag) => (
                                                     <span key={tag} className="text-xs font-semibold text-blue-600 dark:text-blue-300">

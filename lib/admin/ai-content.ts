@@ -1,5 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
+import { SITE_URL } from "@/lib/api/client";
+import { resolveGeneratedFeaturedImage } from "@/lib/admin/featured-image";
 import { createTutorialDraft, getExistingIdeas, type AdminTutorialSummary } from "@/lib/admin/strapi";
 import { extractJsonObject, isDuplicateIdea, validateGeneratedTutorial } from "@/lib/admin/content-policy";
 
@@ -9,6 +11,7 @@ const MAX_GENERATION_ATTEMPTS = 3;
 export type GenerateAiContentResult = {
     tutorial: AdminTutorialSummary;
     attempt: number;
+    warnings: string[];
 };
 
 function getModelName(): string {
@@ -85,7 +88,7 @@ export async function generateAiTutorialDraft(): Promise<GenerateAiContentResult
         });
 
         const payload = extractJsonObject(result.text);
-        const validation = validateGeneratedTutorial(payload);
+        const validation = validateGeneratedTutorial(payload, { siteUrl: SITE_URL });
         if (!validation.ok) {
             if (attempt === MAX_GENERATION_ATTEMPTS) throw new Error(validation.error);
             continue;
@@ -103,8 +106,19 @@ export async function generateAiTutorialDraft(): Promise<GenerateAiContentResult
             continue;
         }
 
-        const tutorial = await createTutorialDraft(validation.value);
-        return { tutorial, attempt };
+        const imageResult = await resolveGeneratedFeaturedImage({
+            title: validation.value.title,
+            slug: validation.value.slug,
+            category: validation.value.category,
+            metaDescription: validation.value.seo.metaDescription,
+        });
+
+        const tutorial = await createTutorialDraft({
+            ...validation.value,
+            featuredImageId: imageResult.featuredImageId,
+        });
+        tutorial.generationWarnings = imageResult.warnings;
+        return { tutorial, attempt, warnings: imageResult.warnings };
     }
 
     throw new Error("Gagal membuat konten AI setelah beberapa percobaan.");

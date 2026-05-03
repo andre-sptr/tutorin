@@ -1,6 +1,6 @@
 import { SITE_URL, STRAPI_URL } from "@/lib/api/client";
 import type { StrapiBlockNode, StrapiCategory, StrapiListResponse, StrapiTag, StrapiTutorial } from "@/lib/api/types";
-import { SYSTEM_AI_TAG_NAME, SYSTEM_AI_TAG_SLUG, slugifyId, visibleTags } from "@/lib/admin/content-policy";
+import { SYSTEM_AI_TAG_NAME, SYSTEM_AI_TAG_SLUG, buildTutorialDraftData, slugifyId, visibleTags } from "@/lib/admin/content-policy";
 
 type StrapiSingleResponse<T> = {
     data: T;
@@ -19,6 +19,8 @@ export type AdminTutorialSummary = {
     adminUrl: string;
     publicUrl: string;
     metaDescription: string | null;
+    featuredImageUrl: string | null;
+    generationWarnings?: string[];
 };
 
 export type CreateTutorialInput = {
@@ -32,6 +34,25 @@ export type CreateTutorialInput = {
     };
     category: string;
     tags: string[];
+    featuredImageId?: number | null;
+    featuredImageDocumentId?: string | null;
+};
+
+export type UploadFeaturedImageInput = {
+    data: Uint8Array;
+    mediaType: string;
+    fileName: string;
+    alternativeText: string;
+    caption: string;
+};
+
+export type UploadedMedia = {
+    id: number;
+    documentId?: string;
+    url?: string;
+    alternativeText?: string | null;
+    width?: number;
+    height?: number;
 };
 
 export class StrapiAdminError extends Error {
@@ -56,6 +77,12 @@ function getAdminUrl(documentId: string): string {
     return `${STRAPI_URL}/admin/content-manager/collection-types/api::tutorial.tutorial/${documentId}`;
 }
 
+function getMediaUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith("http")) return url;
+    return `${STRAPI_URL}${url}`;
+}
+
 async function strapiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
     const response = await fetch(`${STRAPI_URL}${path}`, {
         ...options,
@@ -76,6 +103,24 @@ async function strapiRequest<T>(path: string, options: RequestInit = {}): Promis
     return (await response.json()) as T;
 }
 
+async function strapiUploadRequest<T>(path: string, formData: FormData): Promise<T> {
+    const response = await fetch(`${STRAPI_URL}${path}`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${getWriteToken()}`,
+        },
+        body: formData,
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        const detail = await response.text().catch(() => "");
+        throw new StrapiAdminError(`Strapi upload gagal: ${response.status} ${response.statusText}`, response.status, detail);
+    }
+
+    return (await response.json()) as T;
+}
+
 function toAdminSummary(tutorial: StrapiTutorial): AdminTutorialSummary {
     return {
         documentId: tutorial.documentId,
@@ -89,6 +134,7 @@ function toAdminSummary(tutorial: StrapiTutorial): AdminTutorialSummary {
         adminUrl: getAdminUrl(tutorial.documentId),
         publicUrl: `${SITE_URL}/tutorial/${tutorial.slug}`,
         metaDescription: tutorial.seo?.metaDescription ?? null,
+        featuredImageUrl: getMediaUrl(tutorial.featuredImage?.url),
     };
 }
 
@@ -184,26 +230,43 @@ export async function getAiTutorials(): Promise<AdminTutorialSummary[]> {
         .map(toAdminSummary);
 }
 
+export async function uploadFeaturedImageAsset(input: UploadFeaturedImageInput): Promise<UploadedMedia> {
+    const formData = new FormData();
+    const blob = new Blob([Buffer.from(input.data)], { type: input.mediaType || "image/png" });
+
+    formData.append("files", blob, input.fileName);
+    formData.append(
+        "fileInfo",
+        JSON.stringify({
+            alternativeText: input.alternativeText,
+            caption: input.caption,
+        }),
+    );
+
+    const uploaded = await strapiUploadRequest<UploadedMedia[]>("/api/upload", formData);
+    const first = uploaded[0];
+    if (!first?.id) {
+        throw new StrapiAdminError("Strapi upload tidak mengembalikan media id.", 422, JSON.stringify(uploaded));
+    }
+    return first;
+}
+
 export async function createTutorialDraft(input: CreateTutorialInput): Promise<AdminTutorialSummary> {
     const category = await findOrCreateCategory(input.category);
     const tags = await Promise.all([
         ...input.tags.map((tag) => findOrCreateTag(tag)),
         findOrCreateTag(SYSTEM_AI_TAG_NAME),
     ]);
+    const draftData = buildTutorialDraftData(input, category.documentId, tags.map((tag) => tag.documentId));
 
-    const data = await strapiRequest<StrapiSingleResponse<StrapiTutorial>>("/api/tutorials?status=draft", {
+    const createParams = new URLSearchParams();
+    createParams.set("status", "draft");
+    createParams.set("populate", "*");
+
+    const data = await strapiRequest<StrapiSingleResponse<StrapiTutorial>>(`/api/tutorials?${createParams.toString()}`, {
         method: "POST",
         body: JSON.stringify({
-            data: {
-                title: input.title,
-                slug: input.slug,
-                content: input.content,
-                seo: input.seo,
-                category: category.documentId,
-                tags: {
-                    connect: tags.map((tag) => tag.documentId),
-                },
-            },
+            data: draftData,
         }),
     });
 
@@ -231,6 +294,7 @@ export async function publishTutorialDraft(documentId: string): Promise<AdminTut
                 slug: tutorial.slug,
                 content: tutorial.content,
                 seo: tutorial.seo,
+                featuredImage: tutorial.featuredImage?.id ?? null,
                 category: tutorial.category?.documentId ?? null,
                 tags: {
                     set: tagDocumentIds,
