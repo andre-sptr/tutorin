@@ -39,7 +39,7 @@ export type UploadImageAssetInput = {
 };
 
 export type FeaturedImageDependencies = {
-  generateImageAsset(input: { prompt: string; config: Extract<ImageGenerationConfig, { enabled: true }> }): Promise<GeneratedImageAsset>;
+  generateImageAsset(input: { prompt: string; config: Extract<ImageGenerationConfig, { enabled: true }>; abortSignal?: AbortSignal }): Promise<GeneratedImageAsset>;
   uploadImageAsset(input: UploadImageAssetInput): Promise<{ id: number | null }>;
 };
 
@@ -47,6 +47,7 @@ export function extensionFromMediaType(mediaType: unknown): string;
 export function buildFeaturedImageFileName(slug: unknown, mediaType: unknown): string;
 export function findGeminiInlineImage(response: unknown, fallbackMediaType?: string): GeneratedImageAsset;
 export function getImageGenerationConfig(env?: NodeJS.ProcessEnv): ImageGenerationConfig;
+export function getImageTimeoutMs(env?: NodeJS.ProcessEnv): number;
 export function resolveFeaturedImageForDraft(
   input: FeaturedImageDraftInput,
   dependencies: FeaturedImageDependencies,

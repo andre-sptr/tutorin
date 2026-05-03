@@ -41,6 +41,7 @@ AI_IMAGE_MODEL=gemini-3-pro-image-preview
 GEMINI_API_KEY=isi_vertex_ai_express_api_key
 AI_IMAGE_ASPECT_RATIO=16:9
 AI_IMAGE_MIME_TYPE=image/png
+AI_IMAGE_TIMEOUT_MS=20000
 
 # Admin panel /admin
 ADMIN_USERNAME=admin
@@ -60,4 +61,4 @@ Admin panel tersedia di `/admin`. Untuk menjalankan generator otomatis harian, p
 curl -fsS -X POST http://localhost:3000/api/cron/generate-content -H "Authorization: Bearer $CRON_SECRET"
 ```
 
-Draft AI otomatis mengisi `seo.canonicalUrl` dari `NEXT_PUBLIC_SITE_URL` dan slug artikel. Jika `AI_IMAGE_ENABLED=true`, generator juga mencoba membuat gambar featured image lewat Vertex AI Express (`@google/genai` dengan `GEMINI_API_KEY`), upload ke Strapi Media Library, lalu memasangnya ke field `featuredImage`. Jika image provider belum dikonfigurasi atau gagal, draft tetap dibuat dan admin panel menampilkan warning.
+Draft AI otomatis mengisi `seo.canonicalUrl` dari `NEXT_PUBLIC_SITE_URL` dan slug artikel. Jika `AI_IMAGE_ENABLED=true`, generator juga mencoba membuat gambar featured image lewat Vertex AI Express (`@google/genai` dengan `GEMINI_API_KEY`), upload ke Strapi Media Library, lalu memasangnya ke field `featuredImage`. Jika image provider belum dikonfigurasi, gagal, atau melewati `AI_IMAGE_TIMEOUT_MS`, draft tetap dibuat dan admin panel menampilkan warning.

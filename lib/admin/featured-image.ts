@@ -31,9 +31,11 @@ function getImageSize(): ImageSize {
 async function generateVertexImageAsset({
     prompt,
     config,
+    abortSignal,
 }: {
     prompt: string;
     config: Extract<EnabledImageConfig, { provider: "vertex" }>;
+    abortSignal?: AbortSignal;
 }): Promise<GeneratedImageAsset> {
     const ai = new GoogleGenAI({
         vertexai: true,
@@ -44,6 +46,7 @@ async function generateVertexImageAsset({
         model: config.model,
         contents: prompt,
         config: {
+            abortSignal,
             responseModalities: ["TEXT", "IMAGE"],
             imageConfig: {
                 aspectRatio: getImageAspectRatio(),
@@ -57,9 +60,11 @@ async function generateVertexImageAsset({
 async function generateOpenAiCompatibleImageAsset({
     prompt,
     config,
+    abortSignal,
 }: {
     prompt: string;
     config: Extract<EnabledImageConfig, { provider: "openai-compatible" }>;
+    abortSignal?: AbortSignal;
 }): Promise<GeneratedImageAsset> {
     const provider = createOpenAI({
         ...(config.baseURL ? { baseURL: config.baseURL } : {}),
@@ -71,6 +76,7 @@ async function generateOpenAiCompatibleImageAsset({
         prompt,
         n: 1,
         size: getImageSize(),
+        abortSignal,
         providerOptions: {
             openai: {
                 quality: process.env.AI_IMAGE_QUALITY || "auto",
@@ -85,9 +91,9 @@ async function generateOpenAiCompatibleImageAsset({
     };
 }
 
-async function generateImageAsset(input: { prompt: string; config: EnabledImageConfig }): Promise<GeneratedImageAsset> {
-    if (input.config.provider === "vertex") return generateVertexImageAsset(input as { prompt: string; config: Extract<EnabledImageConfig, { provider: "vertex" }> });
-    return generateOpenAiCompatibleImageAsset(input as { prompt: string; config: Extract<EnabledImageConfig, { provider: "openai-compatible" }> });
+async function generateImageAsset(input: { prompt: string; config: EnabledImageConfig; abortSignal?: AbortSignal }): Promise<GeneratedImageAsset> {
+    if (input.config.provider === "vertex") return generateVertexImageAsset(input as { prompt: string; config: Extract<EnabledImageConfig, { provider: "vertex" }>; abortSignal?: AbortSignal });
+    return generateOpenAiCompatibleImageAsset(input as { prompt: string; config: Extract<EnabledImageConfig, { provider: "openai-compatible" }>; abortSignal?: AbortSignal });
 }
 
 async function uploadImageAsset(input: UploadImageAssetInput): Promise<{ id: number | null }> {

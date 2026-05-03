@@ -247,6 +247,30 @@ test("resolveFeaturedImageForDraft keeps draft flow alive when image generation 
   assert.match(result.warnings[0], /provider timeout/i);
 });
 
+test("resolveFeaturedImageForDraft times out slow image generation before the route can hang", async () => {
+  const result = await Promise.race([
+    resolveFeaturedImageForDraft(
+      {
+        title: "Cara Mengatasi Excel Hang Saat Membuka File Besar",
+        slug: "cara-mengatasi-excel-hang-saat-membuka-file-besar",
+        category: "Excel",
+        metaDescription: "Langkah praktis untuk mengurangi file berat, menonaktifkan add-in, dan membuat Excel kembali responsif.",
+      },
+      {
+        generateImageAsset: async () => new Promise(() => {}),
+        uploadImageAsset: async () => {
+          throw new Error("should not run");
+        },
+      },
+      { AI_IMAGE_ENABLED: "true", AI_IMAGE_PROVIDER: "vertex", GEMINI_API_KEY: "test-key", AI_IMAGE_TIMEOUT_MS: "5" },
+    ),
+    new Promise((resolve) => setTimeout(() => resolve({ featuredImageId: "test-timeout", warnings: ["test timed out"] }), 80)),
+  ]);
+
+  assert.equal(result.featuredImageId, null);
+  assert.match(result.warnings[0], /timeout/i);
+});
+
 test("buildStrapiBlocks converts sections into Strapi block content", () => {
   const blocks = buildStrapiBlocks([
     {
