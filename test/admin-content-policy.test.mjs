@@ -2,20 +2,16 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import contentPolicy from "../lib/admin/content-policy.js";
-import featuredImagePolicy from "../lib/admin/featured-image-policy.js";
 
 const {
   buildStrapiBlocks,
   buildCanonicalUrl,
-  buildFeaturedImagePrompt,
   buildTutorialDraftData,
   isDuplicateIdea,
   normalizeIdeaText,
   slugifyId,
   validateGeneratedTutorial,
 } = contentPolicy;
-
-const { findGeminiInlineImage, getImageGenerationConfig, resolveFeaturedImageForDraft } = featuredImagePolicy;
 
 test("slugifyId creates stable Indonesian URL slugs", () => {
   assert.equal(
@@ -87,20 +83,6 @@ test("validateGeneratedTutorial builds canonicalUrl from the site URL and genera
   );
 });
 
-test("buildFeaturedImagePrompt creates a safe editorial tech image brief", () => {
-  const prompt = buildFeaturedImagePrompt({
-    title: "Cara Mengatasi Excel Hang Saat Membuka File Besar",
-    category: "Excel",
-    metaDescription: "Langkah praktis untuk mengurangi file berat, menonaktifkan add-in, dan membuat Excel kembali responsif.",
-  });
-
-  assert.match(prompt, /editorial tech illustration/i);
-  assert.match(prompt, /16:9/i);
-  assert.match(prompt, /no readable text/i);
-  assert.match(prompt, /logos/i);
-  assert.match(prompt, /brand marks/i);
-});
-
 test("buildTutorialDraftData connects uploaded media as featuredImage", () => {
   const data = buildTutorialDraftData(
     {
@@ -120,155 +102,6 @@ test("buildTutorialDraftData connects uploaded media as featuredImage", () => {
 
   assert.equal(data.featuredImage, 42);
   assert.deepEqual(data.tags, { connect: ["tag-doc-id", "system-tag-doc-id"] });
-});
-
-test("resolveFeaturedImageForDraft skips disabled image generation with a warning", async () => {
-  const result = await resolveFeaturedImageForDraft(
-    {
-      title: "Cara Mengatasi Excel Hang Saat Membuka File Besar",
-      slug: "cara-mengatasi-excel-hang-saat-membuka-file-besar",
-      category: "Excel",
-      metaDescription: "Langkah praktis untuk mengurangi file berat, menonaktifkan add-in, dan membuat Excel kembali responsif.",
-    },
-    {
-      generateImageAsset: async () => {
-        throw new Error("should not run");
-      },
-      uploadImageAsset: async () => {
-        throw new Error("should not run");
-      },
-    },
-    { AI_IMAGE_ENABLED: "false" },
-  );
-
-  assert.equal(result.featuredImageId, null);
-  assert.match(result.warnings[0], /AI_IMAGE_ENABLED/i);
-});
-
-test("getImageGenerationConfig enables Vertex Express from GEMINI_API_KEY", () => {
-  const config = getImageGenerationConfig({
-    AI_IMAGE_ENABLED: "true",
-    AI_IMAGE_PROVIDER: "vertex",
-    GEMINI_API_KEY: "test-gemini-key",
-    AI_IMAGE_MODEL: "gemini-3-pro-image-preview",
-  });
-
-  assert.equal(config.enabled, true);
-  assert.equal(config.provider, "vertex");
-  assert.equal(config.apiKey, "test-gemini-key");
-  assert.equal(config.model, "gemini-3-pro-image-preview");
-});
-
-test("getImageGenerationConfig requires GEMINI_API_KEY for Vertex Express", () => {
-  const config = getImageGenerationConfig({
-    AI_IMAGE_ENABLED: "true",
-    AI_IMAGE_PROVIDER: "vertex",
-  });
-
-  assert.equal(config.enabled, false);
-  assert.match(config.warning, /GEMINI_API_KEY/i);
-});
-
-test("findGeminiInlineImage extracts the first generated inline image", () => {
-  const image = findGeminiInlineImage(
-    {
-      candidates: [
-        {
-          content: {
-            parts: [
-              { text: "Here is the image." },
-              {
-                inlineData: {
-                  mimeType: "image/png",
-                  data: Buffer.from([1, 2, 3]).toString("base64"),
-                },
-              },
-            ],
-          },
-        },
-      ],
-    },
-    "image/png",
-  );
-
-  assert.equal(image.mediaType, "image/png");
-  assert.deepEqual(Array.from(image.data), [1, 2, 3]);
-});
-
-test("resolveFeaturedImageForDraft returns uploaded media id when image generation succeeds", async () => {
-  const calls = [];
-  const result = await resolveFeaturedImageForDraft(
-    {
-      title: "Cara Mengatasi Excel Hang Saat Membuka File Besar",
-      slug: "cara-mengatasi-excel-hang-saat-membuka-file-besar",
-      category: "Excel",
-      metaDescription: "Langkah praktis untuk mengurangi file berat, menonaktifkan add-in, dan membuat Excel kembali responsif.",
-    },
-    {
-      generateImageAsset: async (input) => {
-        calls.push(["generate", input.prompt]);
-        return { data: new Uint8Array([1, 2, 3]), mediaType: "image/png" };
-      },
-      uploadImageAsset: async (input) => {
-        calls.push(["upload", input.fileName, input.alternativeText]);
-        return { id: 99 };
-      },
-    },
-    { AI_IMAGE_ENABLED: "true", AI_IMAGE_PROVIDER: "vertex", GEMINI_API_KEY: "test-key", AI_IMAGE_MODEL: "test-model" },
-  );
-
-  assert.equal(result.featuredImageId, 99);
-  assert.deepEqual(result.warnings, []);
-  assert.equal(calls[0][0], "generate");
-  assert.match(calls[0][1], /editorial tech illustration/i);
-  assert.deepEqual(calls[1], ["upload", "cara-mengatasi-excel-hang-saat-membuka-file-besar.png", "Cara Mengatasi Excel Hang Saat Membuka File Besar"]);
-});
-
-test("resolveFeaturedImageForDraft keeps draft flow alive when image generation fails", async () => {
-  const result = await resolveFeaturedImageForDraft(
-    {
-      title: "Cara Mengatasi Excel Hang Saat Membuka File Besar",
-      slug: "cara-mengatasi-excel-hang-saat-membuka-file-besar",
-      category: "Excel",
-      metaDescription: "Langkah praktis untuk mengurangi file berat, menonaktifkan add-in, dan membuat Excel kembali responsif.",
-    },
-    {
-      generateImageAsset: async () => {
-        throw new Error("provider timeout");
-      },
-      uploadImageAsset: async () => {
-        throw new Error("should not run");
-      },
-    },
-    { AI_IMAGE_ENABLED: "true", AI_IMAGE_PROVIDER: "vertex", GEMINI_API_KEY: "test-key", AI_IMAGE_MODEL: "test-model" },
-  );
-
-  assert.equal(result.featuredImageId, null);
-  assert.match(result.warnings[0], /provider timeout/i);
-});
-
-test("resolveFeaturedImageForDraft times out slow image generation before the route can hang", async () => {
-  const result = await Promise.race([
-    resolveFeaturedImageForDraft(
-      {
-        title: "Cara Mengatasi Excel Hang Saat Membuka File Besar",
-        slug: "cara-mengatasi-excel-hang-saat-membuka-file-besar",
-        category: "Excel",
-        metaDescription: "Langkah praktis untuk mengurangi file berat, menonaktifkan add-in, dan membuat Excel kembali responsif.",
-      },
-      {
-        generateImageAsset: async () => new Promise(() => {}),
-        uploadImageAsset: async () => {
-          throw new Error("should not run");
-        },
-      },
-      { AI_IMAGE_ENABLED: "true", AI_IMAGE_PROVIDER: "vertex", GEMINI_API_KEY: "test-key", AI_IMAGE_TIMEOUT_MS: "5" },
-    ),
-    new Promise((resolve) => setTimeout(() => resolve({ featuredImageId: "test-timeout", warnings: ["test timed out"] }), 80)),
-  ]);
-
-  assert.equal(result.featuredImageId, null);
-  assert.match(result.warnings[0], /timeout/i);
 });
 
 test("buildStrapiBlocks converts sections into Strapi block content", () => {

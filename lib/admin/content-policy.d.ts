@@ -26,6 +26,7 @@ export type ValidGeneratedTutorial = {
     canonicalUrl: string | null;
   };
   content: StrapiBlockNode[];
+  imagePrompt?: string;
   featuredImageId?: number;
   featuredImageDocumentId?: string;
 };
@@ -34,11 +35,6 @@ export type ValidateGeneratedTutorialOptions = {
   siteUrl?: string;
 };
 
-export type FeaturedImagePromptInput = {
-  title: string;
-  category?: string | null;
-  metaDescription?: string | null;
-};
 
 export type TutorialDraftDataInput = {
   title: string;
@@ -51,7 +47,6 @@ export type TutorialDraftDataInput = {
 
 export function slugifyId(value: unknown): string;
 export function buildCanonicalUrl(siteUrl: unknown, slug: unknown): string | null;
-export function buildFeaturedImagePrompt(input: FeaturedImagePromptInput): string;
 export function normalizeIdeaText(value: unknown): string;
 export function isDuplicateIdea(candidate: ExistingIdea, existingIdeas: ExistingIdea[], threshold?: number): boolean;
 export function buildStrapiBlocks(sections: GeneratedSection[]): StrapiBlockNode[];

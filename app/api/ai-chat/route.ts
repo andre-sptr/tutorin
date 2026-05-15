@@ -1,15 +1,13 @@
-import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { streamText, type ModelMessage } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "edge";
 
-const SUMOPOD_API_URL = "https://ai.sumopod.com/v1";
-const SUMOPOD_API_KEY = process.env.SUMOPOD_API_KEY ?? "";
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY ?? "";
 
-const sumopod = createOpenAI({
-    baseURL: SUMOPOD_API_URL,
-    apiKey: SUMOPOD_API_KEY,
+const anthropic = createAnthropic({
+    apiKey: ANTHROPIC_API_KEY,
 });
 
 const SYSTEM_PROMPT = `Kamu adalah "Bang Tutor" 🤖, asisten AI resmi dari TutorinBang - portal tutorial teknologi terpercaya untuk masyarakat Indonesia.
@@ -69,7 +67,7 @@ function getMessageContent(message: IncomingChatMessage): string {
 }
 
 export async function POST(request: NextRequest) {
-    if (!SUMOPOD_API_KEY) {
+    if (!ANTHROPIC_API_KEY) {
         return NextResponse.json({ error: "API key tidak dikonfigurasi" }, { status: 500 });
     }
 
@@ -101,7 +99,7 @@ export async function POST(request: NextRequest) {
                 : finalMessages;
 
         const result = streamText({
-            model: sumopod("gpt-5.1"),
+            model: anthropic("claude-haiku-4-5-20251001"),
             messages: messagesWithPrompt,
         });
 

@@ -1,11 +1,9 @@
-import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { SITE_URL } from "@/lib/api/client";
-import { resolveGeneratedFeaturedImage } from "@/lib/admin/featured-image";
 import { createTutorialDraft, getExistingIdeas, type AdminTutorialSummary } from "@/lib/admin/strapi";
 import { extractJsonObject, isDuplicateIdea, validateGeneratedTutorial } from "@/lib/admin/content-policy";
 
-const SUMOPOD_API_URL = "https://ai.sumopod.com/v1";
 const MAX_GENERATION_ATTEMPTS = 3;
 
 export type GenerateAiContentResult = {
@@ -15,14 +13,13 @@ export type GenerateAiContentResult = {
 };
 
 function getModelName(): string {
-    return process.env.AI_CONTENT_MODEL || "claude-haiku-4-5";
+    return process.env.AI_CONTENT_MODEL || "claude-haiku-4-5-20251001";
 }
 
 function getAiClient() {
-    const apiKey = process.env.SUMOPOD_API_KEY;
-    if (!apiKey) throw new Error("SUMOPOD_API_KEY belum dikonfigurasi.");
-    return createOpenAI({
-        baseURL: SUMOPOD_API_URL,
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) throw new Error("ANTHROPIC_API_KEY belum dikonfigurasi.");
+    return createAnthropic({
         apiKey,
     });
 }
@@ -56,6 +53,7 @@ Aturan artikel:
 - Setiap section punya heading, 1-2 paragraph, dan bila relevan 2-5 steps.
 - Jangan membuat klaim berlebihan, jangan menyebut harga/produk yang mudah berubah.
 - Attempt saat ini: ${attempt}. Jika attempt lebih dari 1, pilih sudut pandang/topik yang lebih berbeda.
+- Sertakan "imagePrompt" dalam bahasa INGGRIS yang mendeskripsikan gambar ilustrasi editorial untuk artikel ini. Gunakan instruksi spesifik tanpa teks atau screenshot.
 
 Balas HANYA JSON valid tanpa markdown:
 {
@@ -67,6 +65,7 @@ Balas HANYA JSON valid tanpa markdown:
     "metaTitle": "string",
     "metaDescription": "string"
   },
+  "imagePrompt": "Create a clean editorial tech illustration for an Indonesian tutorial article...",
   "sections": [
     {
       "heading": "string",
@@ -106,19 +105,13 @@ export async function generateAiTutorialDraft(): Promise<GenerateAiContentResult
             continue;
         }
 
-        const imageResult = await resolveGeneratedFeaturedImage({
-            title: validation.value.title,
-            slug: validation.value.slug,
-            category: validation.value.category,
-            metaDescription: validation.value.seo.metaDescription,
-        });
-
         const tutorial = await createTutorialDraft({
             ...validation.value,
-            featuredImageId: imageResult.featuredImageId,
         });
-        tutorial.generationWarnings = imageResult.warnings;
-        return { tutorial, attempt, warnings: imageResult.warnings };
+        const warnings = [];
+        if (!validation.value.imagePrompt) warnings.push("imagePrompt tidak dihasilkan oleh AI.");
+        tutorial.generationWarnings = warnings;
+        return { tutorial, attempt, warnings };
     }
 
     throw new Error("Gagal membuat konten AI setelah beberapa percobaan.");

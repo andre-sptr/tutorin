@@ -10,9 +10,9 @@
     "test:admin": "node test/admin-content-policy.test.mjs"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.77",
     "@ai-sdk/openai": "^3.0.58",
     "@ai-sdk/react": "^3.0.176",
-    "@google/genai": "^1.51.0",
     "@tailwindcss/typography": "^0.5.19",
     "ai": "^6.0.174",
     "framer-motion": "^12.38.0",
